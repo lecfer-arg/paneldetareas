@@ -1,4 +1,4 @@
-# Panel de Tareas — Mission Control
+# Tareas por Satoshis — Cada Satoshi cuenta
 
 Sistema de gestión de tareas con recompensas en satoshis para un equipo de trabajo.
 Frontend estático que lee datos en vivo desde Google Sheets.
