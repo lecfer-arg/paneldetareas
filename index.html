@@ -107,7 +107,7 @@ body::after {
 .brand-sub {
   font-family: var(--font-mono);
   font-size: 10.3px;
-  color: #ffffff;
+  color: var(--accent);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-top: 2px;
@@ -241,6 +241,8 @@ body::after {
   transition: all 0.3s;
   cursor: default;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .task-card::before {
   content: '';
@@ -350,6 +352,7 @@ body::after {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   margin-bottom: 16px;
+  margin-top: auto;
 }
 .assignee-avatar {
   width: 50px; height: 50px;
@@ -447,7 +450,7 @@ body::after {
 .task-stat-value.success { color: var(--success); }
 .task-stat-sub {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-dim);
   margin-top: 2px;
 }
@@ -458,7 +461,7 @@ body::after {
   gap: 6px;
 }
 .satoshis-bonus {
-  font-size: 10.2px;
+  font-size: 12px;
   color: var(--success);
   font-family: var(--font-mono);
 }
@@ -915,39 +918,21 @@ body::after {
 
     <!-- TAB: TAREAS SIN ASIGNAR -->
     <div class="tab-panel" id="panel-open">
-      <div class="section-header">
-        <div class="section-title">Disponibles para tomar</div>
-        <div class="section-line"></div>
-        <div class="section-count" id="open-count">0</div>
-      </div>
       <div class="tasks-grid" id="tasks-open"></div>
     </div>
 
     <!-- TAB: TAREAS EN CURSO -->
     <div class="tab-panel" id="panel-tasks" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">En progreso</div>
-        <div class="section-line"></div>
-        <div class="section-count" id="active-count">0</div>
-      </div>
       <div class="tasks-grid" id="tasks-active"></div>
     </div>
 
     <!-- TAB: LEADERBOARD -->
     <div class="tab-panel" id="panel-leaderboard" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">Ranking General</div>
-        <div class="section-line"></div>
-      </div>
       <div class="leaderboard" id="leaderboard"></div>
     </div>
 
     <!-- TAB: HISTORY -->
     <div class="tab-panel" id="panel-history" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">Tareas Pasadas</div>
-        <div class="section-line"></div>
-      </div>
       <div class="history-list" id="history-list"></div>
     </div>
 
