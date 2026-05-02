@@ -1248,8 +1248,22 @@ function renderTaskCard(t) {
       timeValue = `<span class="task-stat-value danger">No completada</span>`;
     }
   } else if (estado === 'abierta') {
+    // Para tareas sin asignar: mostrar la duración total (fecha_limite - fecha_inicio)
+    const inicio = parseDate(t.fecha_inicio);
+    let durationText = '—';
+    if (inicio && deadline) {
+      const diff = deadline.getTime() - inicio.getTime();
+      if (diff > 0) {
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const minutes = Math.floor((diff % 3600000) / 60000);
+        if (days > 0) durationText = `${days}d ${hours}h`;
+        else if (hours > 0) durationText = `${hours}h ${minutes}m`;
+        else durationText = `${minutes}m`;
+      }
+    }
     timeLabel = 'Tiempo aproximado';
-    timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
+    timeValue = `<span class="task-stat-value accent">${durationText}</span>`;
   } else {
     timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Tiempo restante';
     timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
