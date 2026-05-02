@@ -6,7 +6,7 @@
 <title>Panel de Tareas — Mission Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #000000;
@@ -100,7 +100,7 @@ body::after {
 }
 .brand-text { display: flex; flex-direction: column; }
 .brand-title {
-  font-size: 14px;
+  font-size: 14.42px;
   font-weight: 600;
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -119,16 +119,17 @@ body::after {
 .metric-label {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-faint);
-  letter-spacing: 0.2em;
+  color: #ffffff;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 2px;
 }
 .metric-value {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14.85px;
+  font-weight: 700;
   color: var(--text);
+  letter-spacing: -0.02em;
 }
 .metric-value.accent { color: var(--accent); }
 
@@ -164,7 +165,7 @@ body::after {
   color: var(--text-dim);
   padding: 16px 20px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
   cursor: pointer;
@@ -188,10 +189,15 @@ body::after {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   border-radius: 2px;
-  font-size: 9px;
+  font-size: 11px;
   color: var(--text-dim);
 }
-.tab.active .count { color: var(--accent); border-color: var(--accent); }
+.tab.active .count {
+  color: var(--bg);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
 
 /* ---------- CONTENT ---------- */
 .content { padding: 32px; max-width: 1600px; margin: 0 auto; }
@@ -265,8 +271,8 @@ body::after {
 }
 .task-id {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
+  font-size: 10.2px;
+  color: #ffffff;
   letter-spacing: 0.15em;
 }
 .task-status {
@@ -277,7 +283,14 @@ body::after {
   text-transform: uppercase;
   border: 1px solid currentColor;
 }
-.status-en_progreso { color: var(--accent); }
+.status-en_progreso {
+  color: var(--accent);
+  animation: pulse-text 2s ease-in-out infinite;
+}
+@keyframes pulse-text {
+  0%, 100% { color: var(--accent); }
+  50% { color: rgba(247, 147, 26, 0.35); }
+}
 .status-abierta { color: var(--text-dim); }
 .status-completada { color: var(--success); }
 .status-no_completada { color: var(--danger); }
@@ -288,17 +301,47 @@ body::after {
   margin-bottom: 8px;
   letter-spacing: -0.01em;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: calc(18px * 1.3 * 3);
+}
+.task-desc-wrapper {
+  margin-bottom: 20px;
 }
 .task-desc {
   font-size: 13px;
   color: var(--text-dim);
   line-height: 1.5;
-  margin-bottom: 20px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  height: calc(13px * 1.5 * 3);
 }
+.task-desc.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  height: auto;
+  overflow: visible;
+}
+.task-desc-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+.task-desc-toggle:hover { opacity: 0.7; }
 
 .task-assignee {
   display: flex;
@@ -310,13 +353,13 @@ body::after {
   margin-bottom: 16px;
 }
 .assignee-avatar {
-  width: 32px; height: 32px;
+  width: 50px; height: 50px;
   border-radius: 50%;
   border: 1.5px solid var(--accent);
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--accent);
   overflow: hidden;
@@ -327,7 +370,7 @@ body::after {
 .assignee-label {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-faint);
+  color: #cccccc;
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
@@ -337,6 +380,46 @@ body::after {
   color: var(--text);
 }
 .assignee-empty { color: var(--text-dim); font-style: italic; font-size: 13px; }
+
+.task-take-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+  box-shadow: 0 0 12px rgba(247, 147, 26, 0.3);
+  animation: pulse-btn 2s ease-in-out infinite;
+}
+@keyframes pulse-btn {
+  0%, 100% {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(247, 147, 26, 0.3);
+  }
+  50% {
+    background: rgba(247, 147, 26, 0.55);
+    box-shadow: 0 0 6px rgba(247, 147, 26, 0.15);
+  }
+}
+.task-take-btn:hover {
+  background: #ffaa3a;
+  box-shadow: 0 0 18px rgba(247, 147, 26, 0.6);
+  transform: translateY(-1px);
+  animation: none;
+}
+.task-take-btn:active {
+  transform: translateY(0);
+}
 
 .task-footer {
   display: grid;
@@ -349,7 +432,7 @@ body::after {
 .task-stat-label {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-faint);
+  color: #cccccc;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-bottom: 4px;
@@ -390,7 +473,7 @@ body::after {
 }
 .lb-row {
   display: grid;
-  grid-template-columns: 60px 60px 1fr 140px 140px 100px 100px;
+  grid-template-columns: 60px 80px 1fr 140px 100px 100px;
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
@@ -406,9 +489,47 @@ body::after {
 .lb-row.header > div {
   font-family: var(--font-mono);
   font-size: 9px;
-  color: var(--text-faint);
+  color: #cccccc;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+/* Bloque combinado: barra arriba, cantidad de sats al medio, nickname abajo */
+.lb-sats-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.lb-bar-container-inline {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  overflow: hidden;
+  position: relative;
+}
+.lb-bar-inline {
+  height: 100%;
+  transition: width 0.6s ease-out;
+}
+.lb-sats-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.lb-bonus-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--success);
+  white-space: nowrap;
+}
+.lb-nickname {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .lb-rank {
@@ -423,13 +544,14 @@ body::after {
 .lb-rank.bronze { color: #CD7F32; }
 
 .lb-avatar {
-  width: 40px; height: 40px;
+  width: 60px; height: 60px;
   border-radius: 50%;
   border: 1.5px solid var(--accent);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono);
   font-weight: 600;
+  font-size: 20px;
   color: var(--accent);
   background: var(--bg);
 }
@@ -455,6 +577,29 @@ body::after {
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
   transition: width 0.6s ease-out;
+}
+
+.lb-bar-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lb-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.lb-bar-sats {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+.lb-bar-nick {
+  font-size: 14px;
+  font-weight: 500;
+  color: #cccccc;
+  letter-spacing: 0.02em;
 }
 
 /* ---------- HISTORIAL ---------- */
@@ -665,13 +810,15 @@ body::after {
   .content { padding: 20px 16px; }
   .tasks-grid { grid-template-columns: 1fr; }
   .lb-row {
-    grid-template-columns: 40px 40px 1fr 90px;
+    grid-template-columns: 40px 50px 1fr 80px;
     padding: 12px 14px;
     font-size: 12px;
     gap: 10px;
   }
   .lb-row .lb-stats-extra { display: none; }
   .lb-row.header > div:nth-child(n+5) { display: none; }
+  .lb-bar-sats { font-size: 12px; }
+  .lb-bar-nick { font-size: 12px; }
   .lb-name { font-size: 13px; }
   .lb-value { font-size: 12px; }
   .history-item {
@@ -707,12 +854,16 @@ body::after {
     </div>
     <div class="metrics">
       <div class="metric">
-        <div class="metric-label">BTC / USD</div>
+        <div class="metric-label">Valor de 1 sat/usd</div>
         <div class="metric-value" id="btc-price">—</div>
       </div>
       <div class="metric">
         <div class="metric-label">Sats Repartidos</div>
         <div class="metric-value accent" id="total-sats">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Tareas</div>
+        <div class="metric-value" id="total-tasks">—</div>
       </div>
       <button class="refresh-btn" id="refresh-btn" title="Actualizar datos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -727,7 +878,8 @@ body::after {
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab active" data-tab="tasks">Tareas <span class="count" id="count-tasks">0</span></button>
+    <button class="tab active" data-tab="open">Tareas sin asignar <span class="count" id="count-open">0</span></button>
+    <button class="tab" data-tab="tasks">Tareas en curso <span class="count" id="count-tasks">0</span></button>
     <button class="tab" data-tab="leaderboard">Ranking <span class="count" id="count-people">0</span></button>
     <button class="tab" data-tab="history">Historial <span class="count" id="count-history">0</span></button>
   </div>
@@ -735,25 +887,24 @@ body::after {
   <!-- CONTENT -->
   <div class="content">
 
-    <!-- TAB: TASKS -->
-    <div class="tab-panel" id="panel-tasks">
-      <div id="tasks-active-section">
-        <div class="section-header">
-          <div class="section-title">Activas</div>
-          <div class="section-line"></div>
-          <div class="section-count" id="active-count">0</div>
-        </div>
-        <div class="tasks-grid" id="tasks-active"></div>
+    <!-- TAB: TAREAS SIN ASIGNAR -->
+    <div class="tab-panel" id="panel-open">
+      <div class="section-header">
+        <div class="section-title">Disponibles para tomar</div>
+        <div class="section-line"></div>
+        <div class="section-count" id="open-count">0</div>
       </div>
+      <div class="tasks-grid" id="tasks-open"></div>
+    </div>
 
-      <div id="tasks-open-section">
-        <div class="section-header">
-          <div class="section-title">Abiertas — Sin asignar</div>
-          <div class="section-line"></div>
-          <div class="section-count" id="open-count">0</div>
-        </div>
-        <div class="tasks-grid" id="tasks-open"></div>
+    <!-- TAB: TAREAS EN CURSO -->
+    <div class="tab-panel" id="panel-tasks" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">En progreso</div>
+        <div class="section-line"></div>
+        <div class="section-count" id="active-count">0</div>
       </div>
+      <div class="tasks-grid" id="tasks-active"></div>
     </div>
 
     <!-- TAB: LEADERBOARD -->
@@ -843,7 +994,7 @@ const SAMPLE_DATA = {
     const now = new Date();
     const fmt = (d) => d.toISOString().slice(0,16).replace('T',' ');
     return [
-      { id:'T001', titulo:'Diseñar logo para campaña Q2', descripcion:'Necesito 3 propuestas de logo para la nueva campaña, formato vectorial.', asignado_a:'Trinity', fecha_inicio: fmt(new Date(now.getTime() - 86400000)), fecha_limite: fmt(new Date(now.getTime() + 2*86400000)), satoshis_base:5000, satoshis_bonus:2000, estado:'en_progreso', a_tiempo:'', sin_errores:'', pagado:'NO' },
+      { id:'T001', titulo:'Organización de contratos individuales para seguro de caución Bariloche 26', descripcion:'Necesito que organices y prepares los contratos individuales para cada beneficiario del seguro de caución del evento Bariloche 26. Hay que revisar los datos personales, validar las firmas, armar el legajo digital de cada uno y asegurarse de que todos los anexos estén correctamente adjuntos. Una vez listos, subir todo a la carpeta compartida y enviar un resumen por mail con el detalle de cada contrato procesado.', asignado_a:'Trinity', fecha_inicio: fmt(new Date(now.getTime() - 86400000)), fecha_limite: fmt(new Date(now.getTime() + 2*86400000)), satoshis_base:5000, satoshis_bonus:2000, estado:'en_progreso', a_tiempo:'', sin_errores:'', pagado:'NO' },
       { id:'T002', titulo:'Revisar contratos proveedores', descripcion:'Leer y resumir los 4 contratos de la carpeta compartida.', asignado_a:'Morpheus', fecha_inicio: fmt(new Date(now.getTime() - 6*3600000)), fecha_limite: fmt(new Date(now.getTime() + 18*3600000)), satoshis_base:3000, satoshis_bonus:1500, estado:'en_progreso', a_tiempo:'', sin_errores:'', pagado:'NO' },
       { id:'T003', titulo:'Setup servidor de pruebas', descripcion:'Levantar entorno staging con la nueva version del backend.', asignado_a:'Neo', fecha_inicio: fmt(new Date(now.getTime() - 3*86400000)), fecha_limite: fmt(new Date(now.getTime() - 86400000)), satoshis_base:8000, satoshis_bonus:3000, estado:'completada', a_tiempo:'SI', sin_errores:'SI', pagado:'NO' },
       { id:'T004', titulo:'Traducir manual de usuario', descripcion:'Traducir las 12 paginas del manual al ingles.', asignado_a:'Cipher', fecha_inicio: fmt(new Date(now.getTime() - 5*86400000)), fecha_limite: fmt(new Date(now.getTime() - 2*86400000)), satoshis_base:4000, satoshis_bonus:1500, estado:'no_completada', a_tiempo:'NO', sin_errores:'', pagado:'NO' },
@@ -869,7 +1020,7 @@ let state = {
   tareas: [],
   config: {},
   btcPrice: null,
-  currentTab: 'tasks',
+  currentTab: 'open',
 };
 
 // ============================================================================
@@ -1005,6 +1156,14 @@ function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 
+// Toggle leer más / leer menos en la descripción de las tareas
+window.toggleDesc = function(descId, btn) {
+  const el = document.getElementById(descId);
+  if (!el) return;
+  const expanded = el.classList.toggle('expanded');
+  btn.textContent = expanded ? 'Leer menos' : 'Leer más';
+};
+
 function parseDate(str) {
   if (!str) return null;
   // Acepta "2026-04-27 18:00" o "2026-04-27T18:00"
@@ -1088,10 +1247,19 @@ function renderTaskCard(t) {
     } else {
       timeValue = `<span class="task-stat-value danger">No completada</span>`;
     }
+  } else if (estado === 'abierta') {
+    timeLabel = 'Tiempo aproximado';
+    timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
   } else {
     timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Tiempo restante';
     timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
   }
+
+  // Detectar si la descripción es lo suficientemente larga para necesitar "leer más"
+  // Aproximación: contamos caracteres (aprox 60 por linea, 3 lineas = 180)
+  const descText = t.descripcion || '';
+  const isLongDesc = descText.length > 180;
+  const descId = `desc-${t.id}`;
 
   return `
     <div class="${cardClass}">
@@ -1100,7 +1268,10 @@ function renderTaskCard(t) {
         <div class="task-status status-${escapeHtml(estado)}">${escapeHtml(estado.replace('_',' '))}</div>
       </div>
       <div class="task-title">${escapeHtml(t.titulo)}</div>
-      <div class="task-desc">${escapeHtml(t.descripcion)}</div>
+      <div class="task-desc-wrapper">
+        <div class="task-desc" id="${descId}">${escapeHtml(descText)}</div>
+        ${isLongDesc ? `<button class="task-desc-toggle" onclick="toggleDesc('${descId}', this)">Leer más</button>` : ''}
+      </div>
 
       <div class="task-assignee">
         ${avatarHTML(persona)}
@@ -1109,6 +1280,14 @@ function renderTaskCard(t) {
           <div class="assignee-name ${persona ? '' : 'assignee-empty'}">${persona ? escapeHtml(persona.nickname) : 'Disponible para tomar'}</div>
         </div>
       </div>
+
+      ${estado === 'abierta' ? `
+        <a class="task-take-btn"
+           href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20%F0%9F%98%8F"
+           target="_blank" rel="noopener">
+          Tomar esta tarea
+        </a>
+      ` : ''}
 
       <div class="task-footer">
         <div class="task-stat">
@@ -1141,7 +1320,8 @@ function renderTasks() {
 
   document.getElementById('active-count').textContent = inProgress.length;
   document.getElementById('open-count').textContent = open.length;
-  document.getElementById('count-tasks').textContent = inProgress.length + open.length;
+  document.getElementById('count-tasks').textContent = inProgress.length;
+  document.getElementById('count-open').textContent = open.length;
 }
 
 function emptyState(msg) {
@@ -1159,16 +1339,18 @@ function calcStats(persona) {
   const totalFinished = completed.length + failed.length;
   const onTimePercent = totalFinished > 0 ? Math.round((onTime / totalFinished) * 100) : 0;
 
-  let totalSats = 0;
+  let baseSats = 0;
+  let bonusSats = 0;
   completed.forEach(t => {
     const onTimeTask = (t.a_tiempo||'').toUpperCase() === 'SI';
     if (onTimeTask) {
-      totalSats += parseInt(t.satoshis_base || 0);
+      baseSats += parseInt(t.satoshis_base || 0);
       if ((t.sin_errores||'').toUpperCase() === 'SI') {
-        totalSats += parseInt(t.satoshis_bonus || 0);
+        bonusSats += parseInt(t.satoshis_bonus || 0);
       }
     }
   });
+  const totalSats = baseSats + bonusSats;
 
   return {
     persona,
@@ -1176,6 +1358,8 @@ function calcStats(persona) {
     failed: failed.length,
     onTimePercent,
     totalSats,
+    baseSats,
+    bonusSats,
     activeTask: tasks.find(t => (t.estado||'').toLowerCase().trim() === 'en_progreso'),
   };
 }
@@ -1187,11 +1371,10 @@ function renderLeaderboard() {
 
   const headerRow = `
     <div class="lb-row header">
-      <div>#</div>
       <div></div>
-      <div>Nickname</div>
-      <div>Satoshis</div>
-      <div>USD</div>
+      <div></div>
+      <div>Satoshis Ganados</div>
+      <div>Equivalente en USD</div>
       <div class="lb-stats-extra">A tiempo</div>
       <div class="lb-stats-extra">Tareas</div>
     </div>
@@ -1201,14 +1384,18 @@ function renderLeaderboard() {
     const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
     const usd = satsToUSD(s.totalSats);
     const barWidth = maxSats > 0 ? (s.totalSats / maxSats) * 100 : 0;
+    const personColor = s.persona.color_acento || '#F7931A';
     return `
       <div class="lb-row">
         <div class="lb-rank ${rankClass}">${(i+1).toString().padStart(2,'0')}</div>
         ${avatarHTML(s.persona)}
-        <div class="lb-name">${escapeHtml(s.persona.nickname)}</div>
-        <div>
-          <div class="lb-value accent">${formatNumber(s.totalSats)}</div>
-          <div class="lb-bar-container" style="margin-top:6px;"><div class="lb-bar" style="width: ${barWidth}%; background: ${s.persona.color_acento||'var(--accent)'}; box-shadow: 0 0 8px ${s.persona.color_acento||'var(--accent)'}66;"></div></div>
+        <div class="lb-sats-block">
+          <div class="lb-bar-container-inline">
+            <div class="lb-bar-inline" style="width: ${barWidth}%; background: ${personColor}; box-shadow: 0 0 8px ${personColor}66;"></div>
+          </div>
+          <div class="lb-sats-value">${formatNumber(s.baseSats)} sats</div>
+          <div class="lb-bonus-value">+ ${formatNumber(s.bonusSats)} bonus</div>
+          <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
         </div>
         <div class="lb-value dim">${formatUSD(usd)}</div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
@@ -1282,13 +1469,19 @@ function renderTopbar() {
   document.getElementById('brand-sub').textContent = state.config.subtitulo || 'Mission Control';
 
   if (state.btcPrice) {
-    document.getElementById('btc-price').textContent = '$' + state.btcPrice.toLocaleString('en-US', { maximumFractionDigits: 0 });
+    const oneSatUSD = state.btcPrice / 100000000;
+    // Mostrar con suficientes decimales para que se vea (ej: $0.00067)
+    document.getElementById('btc-price').textContent = '$' + oneSatUSD.toFixed(6);
   }
 
   const totalSats = state.personas
     .filter(p => (p.activo||'').toUpperCase() !== 'NO')
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
   document.getElementById('total-sats').textContent = formatNumber(totalSats);
+
+  const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
+  const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
+  document.getElementById('total-tasks').textContent = `${resueltas}/${enProgreso}`;
 }
 
 // ============================================================================
@@ -1297,6 +1490,7 @@ function renderTopbar() {
 function switchTab(tab) {
   state.currentTab = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.getElementById('panel-open').style.display = tab === 'open' ? 'block' : 'none';
   document.getElementById('panel-tasks').style.display = tab === 'tasks' ? 'block' : 'none';
   document.getElementById('panel-leaderboard').style.display = tab === 'leaderboard' ? 'block' : 'none';
   document.getElementById('panel-history').style.display = tab === 'history' ? 'block' : 'none';
@@ -1391,7 +1585,7 @@ setInterval(() => {
 
 // Update countdowns every minute
 setInterval(() => {
-  if (state.currentTab === 'tasks') renderTasks();
+  if (state.currentTab === 'tasks' || state.currentTab === 'open') renderTasks();
 }, 60000);
 
 // Config modal
