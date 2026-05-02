@@ -107,7 +107,7 @@ body::after {
 .brand-sub {
   font-family: var(--font-mono);
   font-size: 10.3px;
-  color: var(--text-dim);
+  color: #ffffff;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   margin-top: 2px;
@@ -530,6 +530,12 @@ body::after {
   font-weight: 500;
   color: var(--text);
 }
+.lb-mobile-extra {
+  display: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-top: 2px;
+}
 
 .lb-rank {
   font-family: var(--font-mono);
@@ -609,7 +615,7 @@ body::after {
 }
 .history-item {
   display: grid;
-  grid-template-columns: 100px 1fr 200px 120px 80px;
+  grid-template-columns: 1fr auto;
   align-items: center;
   padding: 14px 20px;
   background: var(--bg-card);
@@ -824,24 +830,26 @@ body::after {
   .content { padding: 20px 16px; }
   .tasks-grid { grid-template-columns: 1fr; }
   .lb-row {
-    grid-template-columns: 40px 50px 1fr 80px;
+    grid-template-columns: 40px 50px 1fr;
     padding: 12px 14px;
     font-size: 12px;
     gap: 10px;
   }
   .lb-row .lb-stats-extra { display: none; }
-  .lb-row.header > div:nth-child(n+5) { display: none; }
-  .lb-bar-sats { font-size: 12px; }
-  .lb-bar-nick { font-size: 12px; }
-  .lb-name { font-size: 13px; }
+  .lb-row.header { display: none; }
+  .lb-sats-value { font-size: 12px; }
+  .lb-bonus-value { font-size: 11px; }
+  .lb-nickname { font-size: 13px; }
   .lb-value { font-size: 12px; }
+  .lb-mobile-extra { display: block; }
   .history-item {
-    grid-template-columns: 1fr 80px;
+    grid-template-columns: 1fr auto;
     gap: 8px;
     padding: 12px;
   }
-  .history-item .history-date,
-  .history-item .history-person { display: none; }
+  .history-item .history-date { display: block; font-size: 10px; color: var(--text-faint); }
+  .history-item .history-person { display: block; }
+  .history-item .history-id { display: none; }
   .brand-sub { display: none; }
 }
 
@@ -1184,9 +1192,12 @@ window.toggleDesc = function(descId, btn) {
 
 function parseDate(str) {
   if (!str) return null;
-  // Acepta "2026-04-27 18:00" o "2026-04-27T18:00"
-  const normalized = String(str).trim().replace(' ', 'T');
-  const d = new Date(normalized);
+  let s = String(str).trim();
+  // Normalizar separador de fecha/hora
+  s = s.replace(' ', 'T');
+  // Agregar cero a horas de un solo dígito: T9:00 → T09:00
+  s = s.replace(/T(\d):/, 'T0$1:');
+  const d = new Date(s);
   return isNaN(d.getTime()) ? null : d;
 }
 
@@ -1315,7 +1326,7 @@ function renderTaskCard(t) {
 
       ${estado === 'abierta' ? `
         <a class="task-take-btn"
-           href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20%F0%9F%98%8F"
+           href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F"
            target="_blank" rel="noopener">
           Tomar esta tarea
         </a>
@@ -1433,6 +1444,11 @@ function renderLeaderboard() {
           <div class="lb-sats-value">${formatNumber(s.baseSats)} sats</div>
           <div class="lb-bonus-value">+ ${formatNumber(s.bonusSats)} bonus</div>
           <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
+          <div class="lb-mobile-extra">
+            <span style="color:#777777;">${formatUSD(usd)}</span>
+            <span style="color:var(--text-dim);margin-left:10px;">⏱ ${s.onTimePercent}%</span>
+            <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
+          </div>
         </div>
         <div class="lb-value dim">${formatUSD(usd)}</div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
@@ -1482,14 +1498,15 @@ function renderHistory() {
 
     return `
       <div class="history-item ${isOk ? 'completed' : 'failed'}">
-        <div class="history-date">${dateStr}</div>
         <div>
+          <div class="history-date">${dateStr}</div>
           <div class="history-title">${escapeHtml(t.titulo)}</div>
           <div class="history-person">${persona ? escapeHtml(persona.nickname) : '—'}</div>
         </div>
-        <div class="history-person">${escapeHtml(t.id)}</div>
-        <div class="history-sats">${sats > 0 ? `+${formatNumber(sats)} sats` : '—'}</div>
-        <div class="history-badge ${badgeClass}">${badgeText}</div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="history-badge ${badgeClass}">${badgeText}</div>
+          <div class="history-sats">${sats > 0 ? `+${formatNumber(sats)} sats` : '—'}</div>
+        </div>
       </div>
     `;
   }).join('');
@@ -1514,7 +1531,9 @@ function renderTopbar() {
   const totalSats = state.personas
     .filter(p => (p.activo||'').toUpperCase() !== 'NO')
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
-  document.getElementById('total-sats').textContent = formatNumber(totalSats);
+  const totalUSD = satsToUSD(totalSats);
+  const usdStr = totalUSD != null ? ` <span style="color:#777777;font-size:11px;">(${formatUSD(totalUSD)})</span>` : '';
+  document.getElementById('total-sats').innerHTML = formatNumber(totalSats) + usdStr;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
   const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
