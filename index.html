@@ -1344,8 +1344,6 @@ function renderTasks() {
   document.getElementById('tasks-open').innerHTML =
     open.length ? open.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
 
-  document.getElementById('active-count').textContent = inProgress.length;
-  document.getElementById('open-count').textContent = open.length;
   document.getElementById('count-tasks').textContent = inProgress.length;
   document.getElementById('count-open').textContent = open.length;
 }
