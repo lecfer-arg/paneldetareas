@@ -111,7 +111,7 @@ body::after {
   letter-spacing: 0.2em;
   word-spacing: 0;
   text-transform: uppercase;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .metrics { display: flex; gap: 32px; align-items: flex-start; }
@@ -849,6 +849,7 @@ body::after {
   .lb-nickname { font-size: 13px; }
   .lb-value { font-size: 12px; }
   .lb-mobile-extra { display: block; }
+  .lb-usd-desktop { display: none; }
   .history-item {
     grid-template-columns: 1fr auto;
     gap: 8px;
@@ -857,7 +858,7 @@ body::after {
   .history-item .history-date { display: block; font-size: 10px; color: var(--text-faint); }
   .history-item .history-person { display: block; }
   .history-item .history-id { display: none; }
-  .brand-sub { display: none; }
+  .brand-sub { font-size: 9px; }
 }
 
 @media (max-width: 480px) {
@@ -1453,7 +1454,7 @@ function renderLeaderboard() {
             <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
           </div>
         </div>
-        <div class="lb-value dim">${formatUSD(usd)}</div>
+        <div class="lb-value dim lb-usd-desktop">${formatUSD(usd)}</div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
         <div class="lb-value lb-stats-extra">${s.completed} <span style="color:var(--text-faint);">/ ${s.failed}</span></div>
       </div>
@@ -1544,7 +1545,7 @@ function renderTopbar() {
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
   const totalUSD = satsToUSD(totalSats);
   const usdLine = totalUSD != null
-    ? `<div style="font-size:11px;color:#777777;font-family:var(--font-mono);margin-top:2px;text-align:right;">(aprox. USD ${totalUSD.toFixed(2)})</div>`
+    ? `<div style="font-size:11px;color:#777777;font-family:var(--font-mono);margin-top:2px;text-align:right;">(USD ${totalUSD.toFixed(2)})</div>`
     : '';
   document.getElementById('total-sats').innerHTML =
     `<div style="text-align:right;">${formatNumber(totalSats)}</div>${usdLine}`;
