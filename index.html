@@ -1343,11 +1343,16 @@ function calcStats(persona) {
   let bonusSats = 0;
   completed.forEach(t => {
     const onTimeTask = (t.a_tiempo||'').toUpperCase() === 'SI';
+    const base = parseInt(t.satoshis_base || 0);
+    const bonus = parseInt(t.satoshis_bonus || 0);
     if (onTimeTask) {
-      baseSats += parseInt(t.satoshis_base || 0);
+      baseSats += base;
       if ((t.sin_errores||'').toUpperCase() === 'SI') {
-        bonusSats += parseInt(t.satoshis_bonus || 0);
+        bonusSats += bonus;
       }
+    } else {
+      // Entregó tarde: paga base menos bonus (penalización fija)
+      baseSats += (base - bonus);
     }
   });
   const totalSats = baseSats + bonusSats;
