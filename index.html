@@ -114,7 +114,7 @@ body::after {
   margin-top: 2px;
 }
 
-.metrics { display: flex; gap: 32px; align-items: center; }
+.metrics { display: flex; gap: 32px; align-items: flex-start; }
 .metric { display: flex; flex-direction: column; align-items: flex-end; }
 .metric-label {
   font-family: var(--font-mono);
@@ -1543,8 +1543,11 @@ function renderTopbar() {
     .filter(p => (p.activo||'').toUpperCase() !== 'NO')
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
   const totalUSD = satsToUSD(totalSats);
-  const usdLine = totalUSD != null ? `<div style="font-size:11px;color:#777777;font-family:var(--font-mono);margin-top:2px;">USD ${totalUSD.toFixed(2)} (Aprox.)</div>` : '';
-  document.getElementById('total-sats').innerHTML = formatNumber(totalSats) + ' sats' + usdLine;
+  const usdLine = totalUSD != null
+    ? `<div style="font-size:11px;color:#777777;font-family:var(--font-mono);margin-top:2px;text-align:right;">(aprox. USD ${totalUSD.toFixed(2)})</div>`
+    : '';
+  document.getElementById('total-sats').innerHTML =
+    `<div style="text-align:right;">${formatNumber(totalSats)}</div>${usdLine}`;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
   const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
