@@ -1328,7 +1328,7 @@ function renderTaskCard(t) {
             <span class="task-stat-value accent">${formatNumber(sats)} sats</span>
           </div>
           ${bonus > 0 ? `<div class="task-stat-sub"><span class="satoshis-bonus">+${formatNumber(bonus)} bonus</span></div>` : ''}
-          <div class="task-stat-sub" style="margin-top:4px;">Equivalente aprox.: ${formatUSD(usd)}</div>
+          <div class="task-stat-sub" style="margin-top:4px;">USD ${usd != null ? (usd < 1 ? usd.toFixed(2) : usd.toFixed(2)) : '0.00'} (Aprox.)</div>
         </div>
       </div>
     </div>
