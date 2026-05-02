@@ -82,17 +82,16 @@ body::after {
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-logo {
   width: 28px; height: 28px;
-  border: 1.5px solid var(--accent);
-  position: relative;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
-.brand-logo::before {
-  content: '';
-  width: 8px; height: 8px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 12px var(--accent-glow);
-  animation: pulse 2s ease-in-out infinite;
+.brand-logo svg {
+  width: 22px; height: 22px;
+  animation: pulse-lightning 2s ease-in-out infinite;
+}
+@keyframes pulse-lightning {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 6px #F5D800); }
+  50% { opacity: 0.4; filter: drop-shadow(0 0 2px #F5D800); }
 }
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -107,7 +106,7 @@ body::after {
 }
 .brand-sub {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 10.3px;
   color: var(--text-dim);
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -311,14 +310,14 @@ body::after {
   margin-bottom: 20px;
 }
 .task-desc {
-  font-size: 13px;
-  color: var(--text-dim);
+  font-size: 15px;
+  color: #999999;
   line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: calc(13px * 1.5 * 3);
+  height: calc(15px * 1.5 * 3);
 }
 .task-desc.expanded {
   display: block;
@@ -805,8 +804,23 @@ body::after {
   .metric-label { font-size: 8px; }
   .metric-value { font-size: 12px; }
   .refresh-btn { display: none; }
-  .tabs { padding: 0 8px; overflow-x: auto; }
-  .tab { padding: 14px 12px; font-size: 10px; white-space: nowrap; }
+  .tabs {
+    flex-direction: column;
+    padding: 0;
+    border-bottom: none;
+  }
+  .tab {
+    padding: 14px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+  }
+  .tab.active::after {
+    top: 0; bottom: 0; left: 0; right: auto;
+    width: 2px;
+    height: 100%;
+  }
   .content { padding: 20px 16px; }
   .tasks-grid { grid-template-columns: 1fr; }
   .lb-row {
@@ -846,7 +860,11 @@ body::after {
   <!-- TOP BAR -->
   <div class="topbar">
     <div class="brand">
-      <div class="brand-logo"></div>
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="#F5D800" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 2L4.5 13.5H11L10 22L20.5 9.5H14L13 2Z"/>
+        </svg>
+      </div>
       <div class="brand-text">
         <div class="brand-title" id="brand-title">Panel de Tareas</div>
         <div class="brand-sub" id="brand-sub">Mission Control</div>
