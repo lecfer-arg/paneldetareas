@@ -357,7 +357,7 @@ body::after {
 .assignee-avatar {
   width: 50px; height: 50px;
   border-radius: 50%;
-  border: 1.5px solid var(--accent);
+  border: 2.5px solid var(--accent);
   background: var(--bg);
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono);
@@ -554,7 +554,7 @@ body::after {
 .lb-avatar {
   width: 60px; height: 60px;
   border-radius: 50%;
-  border: 1.5px solid var(--accent);
+  border: 2.5px solid var(--accent);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-mono);
@@ -887,7 +887,7 @@ body::after {
         <div class="metric-value" id="btc-price">—</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Sats Repartidos</div>
+        <div class="metric-label">Sats Entregados</div>
         <div class="metric-value accent" id="total-sats">—</div>
       </div>
       <div class="metric">
@@ -1505,20 +1505,20 @@ function renderTopbar() {
 
   if (state.btcPrice) {
     const oneSatUSD = state.btcPrice / 100000000;
-    // Mostrar con suficientes decimales para que se vea (ej: $0.00067)
-    document.getElementById('btc-price').textContent = 'USD ' + oneSatUSD.toFixed(6);
+    document.getElementById('btc-price').innerHTML = '<span style="color:#dddddd;">USD ' + oneSatUSD.toFixed(6) + '</span>';
   }
 
   const totalSats = state.personas
     .filter(p => (p.activo||'').toUpperCase() !== 'NO')
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
   const totalUSD = satsToUSD(totalSats);
-  const usdStr = totalUSD != null ? ` <span style="color:#777777;font-size:11px;">(${formatUSD(totalUSD)})</span>` : '';
+  const usdStr = totalUSD != null ? ` <span style="color:#777777;font-size:11px;">(USD ${totalUSD.toFixed(2)})</span>` : '';
   document.getElementById('total-sats').innerHTML = formatNumber(totalSats) + usdStr;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
   const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
-  document.getElementById('total-tasks').textContent = `${resueltas}/${enProgreso}`;
+  document.getElementById('total-tasks').innerHTML =
+    `<span style="animation: pulse-text 2s ease-in-out infinite; color:#ffffff;">${resueltas}</span><span style="color:#cccccc;"> / ${enProgreso}</span>`;
 }
 
 // ============================================================================
