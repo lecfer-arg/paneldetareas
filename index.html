@@ -109,6 +109,7 @@ body::after {
   font-size: 12px;
   color: var(--accent);
   letter-spacing: 0.2em;
+  word-spacing: 0;
   text-transform: uppercase;
   margin-top: 2px;
 }
@@ -165,7 +166,7 @@ body::after {
   padding: 16px 20px;
   font-family: var(--font-mono);
   font-size: 12px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   cursor: pointer;
   position: relative;
@@ -894,8 +895,12 @@ body::after {
         <div class="metric-value accent" id="total-sats">—</div>
       </div>
       <div class="metric">
-        <div class="metric-label">Tareas</div>
-        <div class="metric-value" id="total-tasks">—</div>
+        <div class="metric-label">Resueltas</div>
+        <div class="metric-value" id="total-resueltas">—</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">En Proceso</div>
+        <div class="metric-value" id="total-enproceso">—</div>
       </div>
       <button class="refresh-btn" id="refresh-btn" title="Actualizar datos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1538,13 +1543,15 @@ function renderTopbar() {
     .filter(p => (p.activo||'').toUpperCase() !== 'NO')
     .reduce((sum, p) => sum + calcStats(p).totalSats, 0);
   const totalUSD = satsToUSD(totalSats);
-  const usdStr = totalUSD != null ? ` <span style="color:#777777;font-size:11px;">(USD ${totalUSD.toFixed(2)})</span>` : '';
-  document.getElementById('total-sats').innerHTML = formatNumber(totalSats) + usdStr;
+  const usdLine = totalUSD != null ? `<div style="font-size:11px;color:#777777;font-family:var(--font-mono);margin-top:2px;">USD ${totalUSD.toFixed(2)} (Aprox.)</div>` : '';
+  document.getElementById('total-sats').innerHTML = formatNumber(totalSats) + ' sats' + usdLine;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
   const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
-  document.getElementById('total-tasks').innerHTML =
-    `<span style="animation: pulse-text 2s ease-in-out infinite; color:#ffffff;">${resueltas}</span><span style="color:#cccccc;"> / ${enProgreso}</span>`;
+  document.getElementById('total-resueltas').innerHTML =
+    `<span style="color:#cccccc;">${resueltas}</span>`;
+  document.getElementById('total-enproceso').innerHTML =
+    `<span style="animation: pulse-text 2s ease-in-out infinite; color:#ffffff;">${enProgreso}</span>`;
 }
 
 // ============================================================================
