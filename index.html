@@ -894,8 +894,8 @@ body::after {
       <svg width="32" height="32" viewBox="0 0 24 24" fill="#F5D800" style="animation: pulse-lightning 2s ease-in-out infinite;">
         <path d="M13 2L4.5 13.5H11L10 22L20.5 9.5H14L13 2Z"/>
       </svg>
-      <div style="font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#ffffff;">Panel de Tareas</div>
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#F7931A;">Mission Control</div>
+      <div style="font-family:'Manrope',sans-serif;font-size:16px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:#ffffff;" id="login-title">Panel de Tareas</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#F7931A;" id="login-sub">Mission Control</div>
     </div>
 
     <!-- Input -->
@@ -1607,8 +1607,14 @@ function renderHistory() {
 // RENDER: TOPBAR
 // ============================================================================
 function renderTopbar() {
-  document.getElementById('brand-title').textContent = state.config.titulo_panel || 'Panel de Tareas';
-  document.getElementById('brand-sub').textContent = state.config.subtitulo || 'Mission Control';
+  const titulo = state.config.titulo_panel || 'Panel de Tareas';
+  const subtitulo = state.config.subtitulo || 'Mission Control';
+  document.getElementById('brand-title').textContent = titulo;
+  document.getElementById('brand-sub').textContent = subtitulo;
+  const loginTitle = document.getElementById('login-title');
+  const loginSub = document.getElementById('login-sub');
+  if (loginTitle) loginTitle.textContent = titulo;
+  if (loginSub) loginSub.textContent = subtitulo;
 
   if (state.btcPrice) {
     const oneSatUSD = state.btcPrice / 100000000;
@@ -1727,6 +1733,24 @@ function checkLogin() {
     }, 2000);
   }
 }
+
+// Cargar config al inicio para mostrar título correcto en el login
+(async function loadConfigForLogin() {
+  try {
+    const cfg = loadConfig();
+    if (cfg.configURL) {
+      const configRows = await fetchCSV(cfg.configURL);
+      const configObj = {};
+      configRows.forEach(r => { configObj[r.parametro] = r.valor; });
+      const titulo = configObj.titulo_panel || 'Panel de Tareas';
+      const subtitulo = configObj.subtitulo || 'Mission Control';
+      const loginTitle = document.getElementById('login-title');
+      const loginSub = document.getElementById('login-sub');
+      if (loginTitle) loginTitle.textContent = titulo;
+      if (loginSub) loginSub.textContent = subtitulo;
+    }
+  } catch(e) {}
+})();
 
 // Si ya autenticó en esta sesión, mostrar directo
 (function() {
