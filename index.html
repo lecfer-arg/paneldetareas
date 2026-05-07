@@ -1057,6 +1057,12 @@ body::after {
       <div class="hint">Si no la cargás, se usan los valores por defecto.</div>
     </div>
 
+    <div class="config-field">
+      <label>URL hoja Comparativas (opcional)</label>
+      <input type="url" id="cfg-comparativas" placeholder="https://docs.google.com/.../pub?gid=...&single=true&output=csv">
+      <div class="hint">Hoja con los rangos USD y textos comparativos del ranking.</div>
+    </div>
+
     <div class="config-actions">
       <button class="btn primary" id="cfg-save">Guardar</button>
       <button class="btn" id="cfg-cancel">Cancelar</button>
@@ -1074,6 +1080,7 @@ const DEFAULT_CONFIG = {
   personasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=2098258597&single=true&output=csv',
   tareasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1038238002&single=true&output=csv',
   configURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=319378844&single=true&output=csv',
+  comparativasURL: '',
 };
 
 // Datos de ejemplo embebidos (se usan si no hay URLs configuradas)
@@ -1110,10 +1117,24 @@ const SAMPLE_DATA = {
 // ============================================================================
 // ESTADO
 // ============================================================================
+const DEFAULT_COMPARATIVAS = [
+  { desde: 0,    hasta: 2,     texto: '☕ Equivale a un café cortado' },
+  { desde: 2,    hasta: 8,     texto: '🚗 Equivale a un viaje en Uber por Tucumán' },
+  { desde: 8,    hasta: 15,    texto: '🍕 Equivale a una pizza con empanadas' },
+  { desde: 15,   hasta: 30,    texto: '🎬 Equivale a una entrada de cine + pochoclos' },
+  { desde: 30,   hasta: 60,    texto: '🥩 Equivale a un asado para 4 personas' },
+  { desde: 60,   hasta: 120,   texto: '✈️ Equivale a un pasaje Tucumán → Buenos Aires' },
+  { desde: 120,  hasta: 250,   texto: '🏨 Equivale a una noche de hotel en CABA' },
+  { desde: 250,  hasta: 500,   texto: '📱 Equivale a un celular gama media' },
+  { desde: 500,  hasta: 1000,  texto: '🖥️ Equivale a una notebook básica' },
+  { desde: 1000, hasta: 99999, texto: '🏍️ Equivale a una moto 0km' },
+];
+
 let state = {
   personas: [],
   tareas: [],
   config: {},
+  comparativas: [],
   btcPrice: null,
   currentTab: 'open',
 };
@@ -1216,7 +1237,18 @@ async function loadAll() {
       } else {
         state.config = SAMPLE_DATA.config;
       }
-    } catch (e) {
+      // Cargar comparativas si hay URL
+      if (cfg.comparativasURL) {
+        try {
+          const compRows = await fetchCSV(cfg.comparativasURL);
+          state.comparativas = compRows.map(r => ({
+            desde: parseFloat(r.desde_usd || 0),
+            hasta: parseFloat(r.hasta_usd || 99999),
+            texto: r.texto || '',
+          }));
+        } catch(e) { state.comparativas = DEFAULT_COMPARATIVAS; }
+      } else {
+      } catch (e) {
       showError(e.message);
       return false;
     }
@@ -1453,6 +1485,11 @@ function emptyState(msg) {
 // ============================================================================
 // RENDER: LEADERBOARD
 // ============================================================================
+function getComparativa(usd) {
+  if (usd == null || usd <= 0) return null;
+  return state.comparativas.find(c => usd >= c.desde && usd < c.hasta)?.texto || null;
+}
+
 function calcStats(persona) {
   const tasks = state.tareas.filter(t => t.asignado_a === persona.nickname);
   const completed = tasks.filter(t => (t.estado||'').toLowerCase().trim() === 'completada');
@@ -1510,6 +1547,7 @@ function renderLeaderboard() {
   const rows = stats.map((s, i) => {
     const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
     const usd = satsToUSD(s.totalSats);
+    const comparativa = getComparativa(usd);
     const barWidth = maxSats > 0 ? (s.totalSats / maxSats) * 100 : 0;
     const personColor = s.persona.color_acento || '#F7931A';
     return `
@@ -1529,7 +1567,10 @@ function renderLeaderboard() {
             <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
           </div>
         </div>
-        <div class="lb-value dim lb-usd-desktop">${formatUSD(usd)}</div>
+        <div class="lb-value lb-usd-desktop">
+          <div class="lb-value dim">${formatUSD(usd)}</div>
+          ${comparativa ? `<div style="font-family:var(--font-mono);font-size:10px;color:#777777;margin-top:4px;line-height:1.4;">${escapeHtml(comparativa)}</div>` : ''}
+        </div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
         <div class="lb-value lb-stats-extra">${s.completed} <span style="color:var(--text-faint);">/ ${s.failed}</span></div>
       </div>
@@ -1803,6 +1844,7 @@ document.getElementById('config-trigger').addEventListener('click', () => {
   document.getElementById('cfg-personas').value = cfg.personasURL || '';
   document.getElementById('cfg-tareas').value = cfg.tareasURL || '';
   document.getElementById('cfg-config').value = cfg.configURL || '';
+  document.getElementById('cfg-comparativas').value = cfg.comparativasURL || '';
   document.getElementById('config-overlay').classList.add('show');
 });
 document.getElementById('cfg-cancel').addEventListener('click', () => {
@@ -1813,6 +1855,7 @@ document.getElementById('cfg-save').addEventListener('click', () => {
     personasURL: document.getElementById('cfg-personas').value.trim(),
     tareasURL: document.getElementById('cfg-tareas').value.trim(),
     configURL: document.getElementById('cfg-config').value.trim(),
+    comparativasURL: document.getElementById('cfg-comparativas').value.trim(),
   };
   saveConfig(newCfg);
   document.getElementById('config-overlay').classList.remove('show');
