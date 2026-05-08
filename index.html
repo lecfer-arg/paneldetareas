@@ -288,6 +288,44 @@ body::after {
   color: #FFD700;
   animation: pulse-text 2s ease-in-out infinite;
 }
+.badge-equipo {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  padding: 4px 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid #00E5FF;
+  color: #00E5FF;
+}
+.task-join-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid #00E5FF;
+  color: #00E5FF;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.2s;
+  animation: pulse-join 2s ease-in-out infinite;
+}
+@keyframes pulse-join {
+  0%, 100% { color: #00E5FF; border-color: #00E5FF; box-shadow: 0 0 8px rgba(0,229,255,0.2); }
+  50% { color: rgba(0,229,255,0.4); border-color: rgba(0,229,255,0.4); box-shadow: none; }
+}
+.task-join-btn:hover {
+  background: #00E5FF;
+  color: #000;
+  animation: none;
+  box-shadow: 0 0 16px rgba(0,229,255,0.5);
+}
 .status-en_progreso {
   color: var(--accent);
   animation: pulse-text 2s ease-in-out infinite;
@@ -1052,6 +1090,12 @@ body::after {
     </div>
 
     <div class="config-field">
+      <label>URL hoja Participantes</label>
+      <input type="url" id="cfg-participantes" placeholder="https://docs.google.com/.../pub?gid=...&single=true&output=csv">
+      <div class="hint">Hoja con los participantes de cada tarea y sus resultados individuales.</div>
+    </div>
+
+    <div class="config-field">
       <label>URL hoja Config (opcional)</label>
       <input type="url" id="cfg-config" placeholder="https://docs.google.com/.../pub?gid=...&single=true&output=csv">
       <div class="hint">Si no la cargás, se usan los valores por defecto.</div>
@@ -1080,6 +1124,7 @@ const DEFAULT_CONFIG = {
   personasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=2098258597&single=true&output=csv',
   tareasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1038238002&single=true&output=csv',
   configURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=319378844&single=true&output=csv',
+  participantesURL: '',
   comparativasURL: '',
 };
 
@@ -1096,7 +1141,7 @@ const SAMPLE_DATA = {
     const now = new Date();
     const fmt = (d) => d.toISOString().slice(0,16).replace('T',' ');
     return [
-      { id:'T001', titulo:'Organización de contratos individuales para seguro de caución Bariloche 26', descripcion:'Necesito que organices y prepares los contratos individuales para cada beneficiario del seguro de caución del evento Bariloche 26. Hay que revisar los datos personales, validar las firmas, armar el legajo digital de cada uno y asegurarse de que todos los anexos estén correctamente adjuntos. Una vez listos, subir todo a la carpeta compartida y enviar un resumen por mail con el detalle de cada contrato procesado.', asignado_a:'Trinity', fecha_inicio: fmt(new Date(now.getTime() - 86400000)), fecha_limite: fmt(new Date(now.getTime() + 2*86400000)), satoshis_base:5000, satoshis_bonus:2000, estado:'en_progreso', a_tiempo:'', sin_errores:'', pagado:'NO' },
+      { id:'T001', titulo:'Organización de contratos individuales para seguro de caución Bariloche 26', descripcion:'Necesito que organices y prepares los contratos individuales para cada beneficiario del seguro de caución del evento Bariloche 26. Hay que revisar los datos personales, validar las firmas, armar el legajo digital de cada uno y asegurarse de que todos los anexos estén correctamente adjuntos. Una vez listos, subir todo a la carpeta compartida y enviar un resumen por mail con el detalle de cada contrato procesado.', asignado_a:'Trinity', fecha_inicio: fmt(new Date(now.getTime() - 86400000)), fecha_limite: fmt(new Date(now.getTime() + 2*86400000)), satoshis_base:5000, satoshis_bonus:2000, estado:'en_progreso_equipo', a_tiempo:'', sin_errores:'', pagado:'NO' },
       { id:'T002', titulo:'Revisar contratos proveedores', descripcion:'Leer y resumir los 4 contratos de la carpeta compartida.', asignado_a:'Morpheus', fecha_inicio: fmt(new Date(now.getTime() - 6*3600000)), fecha_limite: fmt(new Date(now.getTime() + 18*3600000)), satoshis_base:3000, satoshis_bonus:1500, estado:'en_progreso', a_tiempo:'', sin_errores:'', pagado:'NO' },
       { id:'T003', titulo:'Setup servidor de pruebas', descripcion:'Levantar entorno staging con la nueva version del backend.', asignado_a:'Neo', fecha_inicio: fmt(new Date(now.getTime() - 3*86400000)), fecha_limite: fmt(new Date(now.getTime() - 86400000)), satoshis_base:8000, satoshis_bonus:3000, estado:'completada', a_tiempo:'SI', sin_errores:'SI', pagado:'NO' },
       { id:'T004', titulo:'Traducir manual de usuario', descripcion:'Traducir las 12 paginas del manual al ingles.', asignado_a:'Cipher', fecha_inicio: fmt(new Date(now.getTime() - 5*86400000)), fecha_limite: fmt(new Date(now.getTime() - 2*86400000)), satoshis_base:4000, satoshis_bonus:1500, estado:'no_completada', a_tiempo:'NO', sin_errores:'', pagado:'NO' },
@@ -1111,7 +1156,15 @@ const SAMPLE_DATA = {
     mostrar_leaderboard: 'SI',
     mostrar_historial: 'SI',
     historial_max_items: 20,
-  }
+  },
+  participantes: [
+    { tarea_id: 'T001', nickname: 'Neo',      a_tiempo: '', sin_errores: '', pagado: 'NO' },
+    { tarea_id: 'T001', nickname: 'Trinity',  a_tiempo: '', sin_errores: '', pagado: 'NO' },
+    { tarea_id: 'T002', nickname: 'Morpheus', a_tiempo: '', sin_errores: '', pagado: 'NO' },
+    { tarea_id: 'T003', nickname: 'Neo',      a_tiempo: 'SI', sin_errores: 'SI', pagado: 'NO' },
+    { tarea_id: 'T004', nickname: 'Cipher',   a_tiempo: 'NO', sin_errores: '', pagado: 'NO' },
+    { tarea_id: 'T006', nickname: 'Trinity',  a_tiempo: 'SI', sin_errores: 'NO', pagado: 'SI' },
+  ]
 };
 
 // ============================================================================
@@ -1133,6 +1186,7 @@ const DEFAULT_COMPARATIVAS = [
 let state = {
   personas: [],
   tareas: [],
+  participantes: [],
   config: {},
   comparativas: [],
   btcPrice: null,
@@ -1217,14 +1271,17 @@ async function loadAll() {
     state.personas = SAMPLE_DATA.personas;
     state.tareas = SAMPLE_DATA.tareas;
     state.config = SAMPLE_DATA.config;
+    state.participantes = SAMPLE_DATA.participantes;
   } else {
     try {
-      const [personas, tareas] = await Promise.all([
+      const [personas, tareas, participantes] = await Promise.all([
         fetchCSV(cfg.personasURL),
         fetchCSV(cfg.tareasURL),
+        cfg.participantesURL ? fetchCSV(cfg.participantesURL) : Promise.resolve([]),
       ]);
       state.personas = personas;
       state.tareas = tareas;
+      state.participantes = participantes;
       if (cfg.configURL) {
         try {
           const configRows = await fetchCSV(cfg.configURL);
@@ -1351,10 +1408,9 @@ function formatUSD(usd) {
 // RENDER: TASK CARDS
 // ============================================================================
 function renderTaskCard(t) {
-  const persona = findPersona(t.asignado_a);
   const deadline = parseDate(t.fecha_limite);
   const remaining = formatTimeRemaining(deadline);
-  const estado = (t.estado || '').toLowerCase().trim();
+  const estado = (t.estado||'').toLowerCase().trim();
   const sats = parseInt(t.satoshis_base || 0);
   const bonus = parseInt(t.satoshis_bonus || 0);
   const total = sats + bonus;
@@ -1362,6 +1418,13 @@ function renderTaskCard(t) {
 
   const esAbiertaPlus = estado === 'abierta_plus';
   const esAbierta = estado === 'abierta' || esAbiertaPlus;
+  const esEquipo = estado === 'en_progreso_equipo';
+
+  // Participantes de esta tarea
+  const partics = state.participantes.filter(p => p.tarea_id === t.id);
+  const lugaresOcupados = partics.length;
+  const lugaresMax = 10;
+  const lugaresLibres = Math.max(0, lugaresMax - lugaresOcupados);
 
   let cardClass = 'task-card ';
   let timeClass = '';
@@ -1377,13 +1440,10 @@ function renderTaskCard(t) {
   let timeLabel, timeValue;
   if (estado === 'completada' || estado === 'no_completada') {
     timeLabel = 'Resultado';
-    if (estado === 'completada') {
-      timeValue = `<span class="task-stat-value success">${(t.sin_errores||'').toUpperCase()==='SI' ? 'Perfecta' : 'Completada'}</span>`;
-    } else {
-      timeValue = `<span class="task-stat-value danger">No completada</span>`;
-    }
+    timeValue = estado === 'completada'
+      ? `<span class="task-stat-value success">Completada</span>`
+      : `<span class="task-stat-value danger">No completada</span>`;
   } else if (esAbierta) {
-    // Para tareas sin asignar: mostrar la duración total (fecha_limite - fecha_inicio)
     const inicio = parseDate(t.fecha_inicio);
     let durationText = '—';
     if (inicio && deadline) {
@@ -1404,11 +1464,24 @@ function renderTaskCard(t) {
     timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
   }
 
-  // Detectar si la descripción es lo suficientemente larga para necesitar "leer más"
-  // Aproximación: contamos caracteres (aprox 60 por linea, 3 lineas = 180)
   const descText = t.descripcion || '';
   const isLongDesc = descText.length > 180;
   const descId = `desc-${t.id}`;
+
+  // Avatares de participantes
+  const avataresHTML = partics.length > 0
+    ? partics.map(p => avatarHTML(findPersona(p.nickname))).join('')
+    : `<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);font-style:italic;">${esAbierta ? 'Disponible para tomar' : 'Sin participantes'}</span>`;
+
+  // Barra de progreso del equipo
+  const barraEquipo = esEquipo ? `
+    <div style="height:4px;background:var(--border);overflow:hidden;margin-top:8px;">
+      <div style="height:100%;width:${(lugaresOcupados/lugaresMax)*100}%;background:#00E5FF;transition:width 0.6s;box-shadow:0 0 8px rgba(0,229,255,0.5);"></div>
+    </div>` : '';
+
+  const lugaresLabel = esEquipo
+    ? `<div style="font-family:var(--font-mono);font-size:10px;color:${lugaresLibres > 0 ? '#00E5FF' : '#EF4444'};margin-top:4px;">${lugaresLibres > 0 ? `${lugaresLibres} lugar${lugaresLibres !== 1 ? 'es' : ''} disponible${lugaresLibres !== 1 ? 's' : ''}` : '🔒 Completo — sin lugares'}</div>`
+    : '';
 
   return `
     <div class="${cardClass}">
@@ -1416,7 +1489,8 @@ function renderTaskCard(t) {
         <div class="task-id">${escapeHtml(t.id)}</div>
         <div style="display:flex;gap:8px;align-items:center;">
           ${esAbiertaPlus ? `<span class="badge-high-reward">⚡ Recompensa Alta</span>` : ''}
-          <div class="task-status status-${escapeHtml(esAbierta ? 'abierta' : estado)}">${esAbierta ? 'abierta' : escapeHtml(estado.replace('_',' '))}</div>
+          ${esEquipo ? `<span class="badge-equipo">👥 Equipo</span>` : ''}
+          <div class="task-status status-${esAbierta ? 'abierta' : esEquipo ? 'en_progreso' : escapeHtml(estado)}">${esAbierta ? 'abierta' : esEquipo ? 'en progreso' : escapeHtml(estado.replace('_',' '))}</div>
         </div>
       </div>
       <div class="task-title">${escapeHtml(t.titulo)}</div>
@@ -1426,20 +1500,18 @@ function renderTaskCard(t) {
       </div>
 
       <div class="task-assignee">
-        ${avatarHTML(persona)}
-        <div class="assignee-info">
-          <div class="assignee-label">${persona ? 'Asignado a' : 'Sin asignar'}</div>
-          <div class="assignee-name ${persona ? '' : 'assignee-empty'}">${persona ? escapeHtml(persona.nickname) : 'Disponible para tomar'}</div>
+        <div style="display:flex;flex-direction:column;width:100%;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="assignee-label">${esEquipo ? 'Participantes' : 'Asignado a'}</div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">${avataresHTML}</div>
+          ${barraEquipo}
+          ${lugaresLabel}
         </div>
       </div>
 
-      ${esAbierta ? `
-        <a class="task-take-btn"
-           href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F"
-           target="_blank" rel="noopener">
-          Tomar esta tarea
-        </a>
-      ` : ''}
+      ${esAbierta ? `<a class="task-take-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>` : ''}
+      ${esEquipo && lugaresLibres > 0 ? `<a class="task-join-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>` : ''}
 
       <div class="task-footer">
         <div class="task-stat">
@@ -1452,7 +1524,7 @@ function renderTaskCard(t) {
             <span class="task-stat-value accent">${formatNumber(sats)} sats</span>
           </div>
           ${bonus > 0 ? `<div class="task-stat-sub"><span class="satoshis-bonus">+${formatNumber(bonus)} bonus</span></div>` : ''}
-          <div class="task-stat-sub" style="margin-top:4px;">USD ${usd != null ? (usd < 1 ? usd.toFixed(2) : usd.toFixed(2)) : '0.00'} (Aprox.)</div>
+          <div class="task-stat-sub" style="margin-top:4px;">USD ${usd != null ? usd.toFixed(2) : '0.00'} (Aprox.)</div>
         </div>
       </div>
     </div>
@@ -1460,7 +1532,7 @@ function renderTaskCard(t) {
 }
 
 function renderTasks() {
-  const inProgress = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso');
+  const inProgress = state.tareas.filter(t => ['en_progreso','en_progreso_equipo'].includes((t.estado||'').toLowerCase().trim()));
   const open = state.tareas
     .filter(t => ['abierta','abierta_plus'].includes((t.estado||'').toLowerCase().trim()))
     .sort((a, b) => {
@@ -1493,40 +1565,53 @@ function getComparativa(usd) {
 }
 
 function calcStats(persona) {
-  const tasks = state.tareas.filter(t => t.asignado_a === persona.nickname);
-  const completed = tasks.filter(t => (t.estado||'').toLowerCase().trim() === 'completada');
-  const failed = tasks.filter(t => (t.estado||'').toLowerCase().trim() === 'no_completada');
-  const onTime = completed.filter(t => (t.a_tiempo||'').toUpperCase() === 'SI').length;
-  const totalFinished = completed.length + failed.length;
-  const onTimePercent = totalFinished > 0 ? Math.round((onTime / totalFinished) * 100) : 0;
+  // Buscar todas las filas de participantes de esta persona
+  const partics = state.participantes.filter(p => p.nickname === persona.nickname);
 
+  // Para cada participación, buscar la tarea correspondiente
   let baseSats = 0;
   let bonusSats = 0;
-  completed.forEach(t => {
-    const onTimeTask = (t.a_tiempo||'').toUpperCase() === 'SI';
-    const base = parseInt(t.satoshis_base || 0);
-    const bonus = parseInt(t.satoshis_bonus || 0);
-    if (onTimeTask) {
-      baseSats += base;
-      if ((t.sin_errores||'').toUpperCase() === 'SI') {
-        bonusSats += bonus;
+  let completed = 0;
+  let failed = 0;
+  let onTimeCount = 0;
+
+  partics.forEach(p => {
+    const tarea = state.tareas.find(t => t.id === p.tarea_id);
+    if (!tarea) return;
+    const estado = (tarea.estado||'').toLowerCase().trim();
+    if (!['completada','no_completada'].includes(estado)) return; // solo tareas finalizadas
+
+    const onTime = (p.a_tiempo||'').toUpperCase() === 'SI';
+    const noErrors = (p.sin_errores||'').toUpperCase() === 'SI';
+    const base = parseInt(tarea.satoshis_base || 0);
+    const bonus = parseInt(tarea.satoshis_bonus || 0);
+
+    if (estado === 'completada') {
+      completed++;
+      if (onTime) {
+        onTimeCount++;
+        baseSats += base;
+        if (noErrors) bonusSats += bonus;
+      } else {
+        baseSats += Math.max(0, base - bonus);
       }
     } else {
-      // Entregó tarde: paga base menos bonus (penalización fija)
-      baseSats += (base - bonus);
+      failed++;
     }
   });
+
+  const totalFinished = completed + failed;
+  const onTimePercent = totalFinished > 0 ? Math.round((onTimeCount / totalFinished) * 100) : 0;
   const totalSats = baseSats + bonusSats;
 
   return {
     persona,
-    completed: completed.length,
-    failed: failed.length,
+    completed,
+    failed,
     onTimePercent,
     totalSats,
     baseSats,
     bonusSats,
-    activeTask: tasks.find(t => (t.estado||'').toLowerCase().trim() === 'en_progreso'),
   };
 }
 
@@ -1845,6 +1930,7 @@ document.getElementById('config-trigger').addEventListener('click', () => {
   const cfg = loadConfig();
   document.getElementById('cfg-personas').value = cfg.personasURL || '';
   document.getElementById('cfg-tareas').value = cfg.tareasURL || '';
+  document.getElementById('cfg-participantes').value = cfg.participantesURL || '';
   document.getElementById('cfg-config').value = cfg.configURL || '';
   document.getElementById('cfg-comparativas').value = cfg.comparativasURL || '';
   document.getElementById('config-overlay').classList.add('show');
@@ -1856,6 +1942,7 @@ document.getElementById('cfg-save').addEventListener('click', () => {
   const newCfg = {
     personasURL: document.getElementById('cfg-personas').value.trim(),
     tareasURL: document.getElementById('cfg-tareas').value.trim(),
+    participantesURL: document.getElementById('cfg-participantes').value.trim(),
     configURL: document.getElementById('cfg-config').value.trim(),
     comparativasURL: document.getElementById('cfg-comparativas').value.trim(),
   };
