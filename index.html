@@ -1248,7 +1248,9 @@ async function loadAll() {
           }));
         } catch(e) { state.comparativas = DEFAULT_COMPARATIVAS; }
       } else {
-      } catch (e) {
+        state.comparativas = DEFAULT_COMPARATIVAS;
+      }
+    } catch (e) {
       showError(e.message);
       return false;
     }
