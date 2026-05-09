@@ -1551,8 +1551,8 @@ function renderTasks() {
       return 0;
     });
 
-  // Combinar: primero abierta_plus, luego equipo con lugares, luego abiertas normales
-  const openCombined = [...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta_plus'), ...equipoConLugares, ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta')];
+  // Combinar: primero abierta_plus, luego abiertas, luego equipo con lugares al final
+  const openCombined = [...open, ...equipoConLugares];
 
   document.getElementById('tasks-active').innerHTML =
     inProgress.length ? inProgress.map(renderTaskCard).join('') : emptyState('No hay tareas en progreso');
@@ -1732,7 +1732,7 @@ function renderHistory() {
         <div>
           <div class="history-date">${dateStr}</div>
           <div class="history-title">${escapeHtml(t.titulo)}</div>
-          <div class="history-person">${persona ? escapeHtml(persona.nickname) : '—'}</div>
+          <div class="history-person">${partics.length > 0 ? partics.map(p => escapeHtml(p.nickname)).join(' - ') : '—'}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="history-badge ${badgeClass}">${badgeText}</div>
