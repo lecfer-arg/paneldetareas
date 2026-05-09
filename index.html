@@ -1533,6 +1533,14 @@ function renderTaskCard(t) {
 
 function renderTasks() {
   const inProgress = state.tareas.filter(t => ['en_progreso','en_progreso_equipo'].includes((t.estado||'').toLowerCase().trim()));
+
+  // Tareas de equipo con lugares disponibles (aparecen también en sin asignar)
+  const equipoConLugares = state.tareas.filter(t => {
+    if ((t.estado||'').toLowerCase().trim() !== 'en_progreso_equipo') return false;
+    const ocupados = state.participantes.filter(p => p.tarea_id === t.id).length;
+    return ocupados < 10;
+  });
+
   const open = state.tareas
     .filter(t => ['abierta','abierta_plus'].includes((t.estado||'').toLowerCase().trim()))
     .sort((a, b) => {
@@ -1543,13 +1551,16 @@ function renderTasks() {
       return 0;
     });
 
+  // Combinar: primero abierta_plus, luego abiertas, luego equipo con lugares al final
+  const openCombined = [...open, ...equipoConLugares];
+
   document.getElementById('tasks-active').innerHTML =
     inProgress.length ? inProgress.map(renderTaskCard).join('') : emptyState('No hay tareas en progreso');
   document.getElementById('tasks-open').innerHTML =
-    open.length ? open.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
+    openCombined.length ? openCombined.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
 
   document.getElementById('count-tasks').textContent = inProgress.length;
-  document.getElementById('count-open').textContent = open.length;
+  document.getElementById('count-open').textContent = openCombined.length;
 }
 
 function emptyState(msg) {
