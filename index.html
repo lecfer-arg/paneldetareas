@@ -1211,6 +1211,10 @@ function saveConfig(cfg) {
 // CSV PARSING
 // ============================================================================
 function parseCSV(text) {
+  // Detectar separador: tab o coma
+  const firstLine = text.split('\n')[0] || '';
+  const sep = firstLine.includes('\t') ? '\t' : ',';
+
   const rows = [];
   let cur = '', row = [], inQuotes = false;
   for (let i = 0; i < text.length; i++) {
@@ -1221,7 +1225,7 @@ function parseCSV(text) {
       else { cur += ch; }
     } else {
       if (ch === '"') { inQuotes = true; }
-      else if (ch === ',') { row.push(cur); cur = ''; }
+      else if (ch === sep) { row.push(cur); cur = ''; }
       else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
       else if (ch === '\r') { /* ignore */ }
       else { cur += ch; }
