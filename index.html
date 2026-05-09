@@ -1691,17 +1691,21 @@ function renderHistory() {
     const persona = findPersona(t.asignado_a);
     const estado = (t.estado||'').toLowerCase().trim();
     const isOk = estado === 'completada';
-    const onTime = (t.a_tiempo||'').toUpperCase() === 'SI';
-    const noErrors = (t.sin_errores||'').toUpperCase() === 'SI';
     const base = parseInt(t.satoshis_base||0);
     const bonus = parseInt(t.satoshis_bonus||0);
+    // Leer participantes de esta tarea
+    const partics = state.participantes.filter(p => p.tarea_id === t.id);
+    // Para el historial mostramos el resultado del primer participante
+    // (o el mejor resultado si hay varios)
+    const onTime = partics.some(p => (p.a_tiempo||'').toUpperCase() === 'SI');
+    const noErrors = partics.some(p => (p.sin_errores||'').toUpperCase() === 'SI');
     let sats = 0;
     if (isOk) {
-      if (onTime) {
-        sats = base + (noErrors ? bonus : 0);
-      } else {
-        sats = base - bonus; // penalización por tardanza
-      }
+     if (onTime) {
+      sats = base + (noErrors ? bonus : 0);
+     } else {
+       sats = base - bonus;
+     }
     }
     const date = parseDate(t.fecha_limite);
     const dateStr = date ? date.toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric'}) : '—';
