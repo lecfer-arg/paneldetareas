@@ -1623,10 +1623,20 @@ function calcStats(persona) {
   const onTimePercent = totalFinished > 0 ? Math.round((onTimeCount / totalFinished) * 100) : 0;
   const totalSats = baseSats + bonusSats;
 
+  // Tareas en proceso actualmente
+  const inProcess = state.participantes.filter(p => {
+    if (p.nickname !== persona.nickname) return false;
+    const tarea = state.tareas.find(t => t.id === p.tarea_id);
+    if (!tarea) return false;
+    const estado = (tarea.estado||'').toLowerCase().trim();
+    return ['en_progreso','en_progreso_equipo'].includes(estado);
+  }).length;
+
   return {
     persona,
     completed,
     failed,
+    inProcess,
     onTimePercent,
     totalSats,
     baseSats,
@@ -1666,11 +1676,12 @@ function renderLeaderboard() {
           </div>
           <div class="lb-sats-value">${formatNumber(s.baseSats)} sats</div>
           <div class="lb-bonus-value">+ ${formatNumber(s.bonusSats)} bonus</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#cccccc;margin-top:2px;">Total de Sats recibidos: <span style="color:#ffffff;font-weight:600;">${formatNumber(s.totalSats)}</span></div>
           <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
           <div class="lb-mobile-extra">
             <span style="color:#777777;">${formatUSD(usd)}</span>
             <span style="color:var(--text-dim);margin-left:10px;">⏱ ${s.onTimePercent}%</span>
-            <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
+            <span style="color:var(--text-dim);margin-left:10px;">✓ <span style="animation:pulse-text 2s ease-in-out infinite;color:#ffffff;">${s.inProcess}</span> / ${s.completed}</span>
           </div>
         </div>
         <div class="lb-value lb-usd-desktop">
@@ -1678,7 +1689,7 @@ function renderLeaderboard() {
           ${comparativa ? `<div style="font-family:var(--font-mono);font-size:10px;color:#777777;margin-top:4px;line-height:1.4;">${escapeHtml(comparativa)}</div>` : ''}
         </div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
-        <div class="lb-value lb-stats-extra">${s.completed} <span style="color:var(--text-faint);">/ ${s.failed}</span></div>
+        <div class="lb-value lb-stats-extra"><span style="animation:pulse-text 2s ease-in-out infinite;color:#ffffff;">${s.inProcess}</span> <span style="color:var(--text-faint);">/</span> <span style="color:#ffffff;">${s.completed}</span></div>
       </div>
     `;
   }).join('');
