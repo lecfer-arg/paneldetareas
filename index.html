@@ -1555,8 +1555,12 @@ function renderTasks() {
       return 0;
     });
 
-  // Combinar: primero abierta_plus, luego abiertas, luego equipo con lugares al final
-  const openCombined = [...open, ...equipoConLugares];
+  // Combinar: primero abierta_plus, luego equipo con lugares, luego abiertas normales
+  const openCombined = [
+    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta_plus'),
+    ...equipoConLugares,
+    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta'),
+  ];
 
   document.getElementById('tasks-active').innerHTML =
     inProgress.length ? inProgress.map(renderTaskCard).join('') : emptyState('No hay tareas en progreso');
