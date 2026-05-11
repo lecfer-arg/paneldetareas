@@ -1863,6 +1863,10 @@ function renderMarquee() {
     rankingMsg = `🏆 Ranking → ` + stats.map((s,i) => `${i+1}° ${s.persona.nickname}`).join('  ·  ');
   }
 
+  // 1b. Total de sats entregados
+  const totalSatsEntregados = stats.reduce((sum, s) => sum + s.totalSats, 0);
+  const satsMsg = `⚡ ${formatNumber(totalSatsEntregados)} Satoshis entregados!`;
+
   // 2. Hito 100k: personas que superaron 100.000 sats y lo lograron en las últimas 48hs
   // Usamos localStorage para recordar a quiénes ya felicitamos
   const hito100k = [];
@@ -1891,7 +1895,7 @@ function renderMarquee() {
   const sheetMsgs = state.comunicados || [];
 
   // Combinar todos los mensajes
-  const allMsgs = [rankingMsg, ...hito100k, ...sheetMsgs].filter(Boolean);
+  const allMsgs = [rankingMsg, satsMsg, ...hito100k, ...sheetMsgs].filter(Boolean);
 
   if (allMsgs.length === 0) {
     bar.style.display = 'none';
