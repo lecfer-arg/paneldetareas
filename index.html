@@ -152,6 +152,61 @@ body::after {
 .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ---------- MARQUESINA ---------- */
+.marquee-bar {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  height: 34px;
+  overflow: hidden;
+  position: relative;
+  z-index: 49;
+}
+.marquee-label {
+  background: var(--accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.marquee-overflow {
+  overflow: hidden;
+  flex: 1;
+}
+.marquee-track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+}
+.marquee-item {
+  color: #cccccc;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.marquee-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
 /* ---------- TABS ---------- */
 .tabs {
   display: flex;
@@ -1029,6 +1084,14 @@ body::after {
   </div>
 
   <!-- TABS -->
+  <!-- MARQUESINA -->
+  <div class="marquee-bar" id="marquee-bar" style="display:none;">
+    <div class="marquee-label">Comunicados</div>
+    <div class="marquee-overflow">
+      <div class="marquee-track" id="marquee-track"></div>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" data-tab="open">Tareas sin asignar <span class="count" id="count-open">0</span></button>
     <button class="tab" data-tab="tasks">Tareas en curso <span class="count" id="count-tasks">0</span></button>
@@ -1126,6 +1189,7 @@ const DEFAULT_CONFIG = {
   tareasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1038238002&single=true&output=csv',
   configURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=319378844&single=true&output=csv',
   participantesURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1202700065&single=true&output=csv',
+  comunicadosURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=612717678&single=true&output=csv',
   comparativasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1536683713&single=true&output=csv',
 };
 
@@ -1189,6 +1253,7 @@ let state = {
   tareas: [],
   participantes: [],
   config: {},
+  comunicados: [],
   comparativas: [],
   btcPrice: null,
   currentTab: 'open',
@@ -1299,6 +1364,19 @@ async function loadAll() {
       } else {
         state.config = SAMPLE_DATA.config;
       }
+      // Cargar comunicados
+      if (cfg.comunicadosURL) {
+        try {
+          const commRows = await fetchCSV(cfg.comunicadosURL);
+          state.comunicados = commRows
+            .filter(r => (r.activo||'').toUpperCase() === 'SI')
+            .map(r => r.mensaje || '')
+            .filter(Boolean);
+        } catch(e) { state.comunicados = []; }
+      } else {
+        state.comunicados = [];
+      }
+
       // Cargar comparativas si hay URL
       if (cfg.comparativasURL) {
         try {
@@ -1767,6 +1845,43 @@ function renderHistory() {
 }
 
 // ============================================================================
+// MARQUESINA
+// ============================================================================
+let marqueeAnimation = null;
+
+function renderMarquee() {
+  const bar = document.getElementById('marquee-bar');
+  const track = document.getElementById('marquee-track');
+  const msgs = state.comunicados;
+
+  if (!msgs || msgs.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+
+  // Duplicar mensajes para loop infinito
+  const allMsgs = [...msgs, ...msgs, ...msgs];
+  track.innerHTML = allMsgs.map(m => `
+    <div class="marquee-item">
+      <span class="marquee-dot"></span>
+      ${escapeHtml(m)}
+    </div>
+  `).join('');
+
+  // Calcular velocidad: ~80px por segundo
+  if (marqueeAnimation) marqueeAnimation.cancel();
+  const totalWidth = track.scrollWidth / 3;
+  const duration = Math.max(10, totalWidth / 80) * 1000;
+
+  marqueeAnimation = track.animate(
+    [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
+    { duration, iterations: Infinity, easing: 'linear' }
+  );
+}
+
+// ============================================================================
 // RENDER: TOPBAR
 // ============================================================================
 function renderTopbar() {
@@ -1867,6 +1982,7 @@ async function init() {
   if (result === 'sample') showSampleNotice();
 
   renderTopbar();
+  renderMarquee();
   renderTasks();
   renderLeaderboard();
   renderHistory();
