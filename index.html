@@ -1593,8 +1593,8 @@ function renderTaskCard(t) {
         </div>
       </div>
 
-      ${esAbierta ? `<a class="task-take-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>` : ''}
-      ${esEquipo && lugaresLibres > 0 ? `<a class="task-join-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>` : ''}
+      ${esAbierta ? `<a class="task-take-btn" href="https://api.whatsapp.com/send?phone=${encodeURIComponent((t.cel_responsable||'543815610623').replace(/\D/g,''))}&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>` : ''}
+      ${esEquipo && lugaresLibres > 0 ? `<a class="task-join-btn" href="https://api.whatsapp.com/send?phone=${encodeURIComponent((t.cel_responsable||'543815610623').replace(/\D/g,''))}&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>` : ''}
 
       <div class="task-footer">
         <div class="task-stat">
