@@ -1910,7 +1910,7 @@ function renderTopbar() {
     `<div style="text-align:right;">${formatNumber(totalSats)}</div>${usdLine}`;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
-  const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
+  const enProgreso = state.tareas.filter(t => ['en_progreso','en_progreso_equipo'].includes((t.estado||'').toLowerCase().trim())).length;
   document.getElementById('total-resueltas').innerHTML =
     `<span style="color:#cccccc;">${resueltas}</span>`;
   document.getElementById('total-enproceso').innerHTML =
