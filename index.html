@@ -1086,7 +1086,7 @@ body::after {
   <!-- TABS -->
   <!-- MARQUESINA -->
   <div class="marquee-bar" id="marquee-bar" style="display:none;">
-    <div class="marquee-label">Comunicados</div>
+    <div class="marquee-label">Novedades</div>
     <div class="marquee-overflow">
       <div class="marquee-track" id="marquee-track"></div>
     </div>
@@ -1852,33 +1852,74 @@ let marqueeAnimation = null;
 function renderMarquee() {
   const bar = document.getElementById('marquee-bar');
   const track = document.getElementById('marquee-track');
-  const msgs = state.comunicados;
 
-  if (!msgs || msgs.length === 0) {
+  // 1. Top 3 del ranking
+  const activos = state.personas.filter(p => (p.activo||'').toUpperCase() !== 'NO');
+  const stats = activos.map(calcStats).sort((a,b) => b.totalSats - a.totalSats);
+  let rankingMsg = '';
+  if (stats.length >= 3) {
+    rankingMsg = `🏆 Ranking actual → 1° ${stats[0].persona.nickname}  ·  2° ${stats[1].persona.nickname}  ·  3° ${stats[2].persona.nickname}`;
+  } else if (stats.length > 0) {
+    rankingMsg = `🏆 Ranking → ` + stats.map((s,i) => `${i+1}° ${s.persona.nickname}`).join('  ·  ');
+  }
+
+  // 2. Hito 100k: personas que superaron 100.000 sats y lo lograron en las últimas 48hs
+  // Usamos localStorage para recordar a quiénes ya felicitamos
+  const hito100k = [];
+  const HITO_KEY = 'panel-hito100k';
+  let hitosGuardados = {};
+  try { hitosGuardados = JSON.parse(localStorage.getItem(HITO_KEY) || '{}'); } catch(e) {}
+
+  const ahora = Date.now();
+  const DURACION_48H = 7 * 24 * 3600 * 1000;
+
+  stats.forEach(s => {
+    if (s.totalSats >= 100000) {
+      if (!hitosGuardados[s.persona.nickname]) {
+        // Primera vez que supera 100k: guardamos el timestamp
+        hitosGuardados[s.persona.nickname] = ahora;
+        try { localStorage.setItem(HITO_KEY, JSON.stringify(hitosGuardados)); } catch(e) {}
+      }
+      const tiempoDesde = ahora - hitosGuardados[s.persona.nickname];
+      if (tiempoDesde < DURACION_48H) {
+        hito100k.push(`🎉 ¡Felicitaciones a ${s.persona.nickname} por llegar a sus primeros 100.000 Satoshis!`);
+      }
+    }
+  });
+
+  // 3. Mensajes del Google Sheet
+  const sheetMsgs = state.comunicados || [];
+
+  // Combinar todos los mensajes
+  const allMsgs = [rankingMsg, ...hito100k, ...sheetMsgs].filter(Boolean);
+
+  if (allMsgs.length === 0) {
     bar.style.display = 'none';
     return;
   }
 
   bar.style.display = 'flex';
 
-  // Duplicar mensajes para loop infinito
-  const allMsgs = [...msgs, ...msgs, ...msgs];
-  track.innerHTML = allMsgs.map(m => `
+  // Duplicar para loop infinito
+  const repeated = [...allMsgs, ...allMsgs, ...allMsgs];
+  track.innerHTML = repeated.map(m => `
     <div class="marquee-item">
       <span class="marquee-dot"></span>
       ${escapeHtml(m)}
     </div>
   `).join('');
 
-  // Calcular velocidad: ~80px por segundo
+  // Velocidad: ~80px por segundo
   if (marqueeAnimation) marqueeAnimation.cancel();
-  const totalWidth = track.scrollWidth / 3;
-  const duration = Math.max(10, totalWidth / 80) * 1000;
-
-  marqueeAnimation = track.animate(
-    [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
-    { duration, iterations: Infinity, easing: 'linear' }
-  );
+  // Pequeño delay para que el DOM esté listo
+  setTimeout(() => {
+    const totalWidth = track.scrollWidth / 3;
+    const duration = Math.max(10, totalWidth / 80) * 1000;
+    marqueeAnimation = track.animate(
+      [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
+      { duration, iterations: Infinity, easing: 'linear' }
+    );
+  }, 100);
 }
 
 // ============================================================================
