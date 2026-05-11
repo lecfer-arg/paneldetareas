@@ -1918,7 +1918,7 @@ function renderMarquee() {
   // Pequeño delay para que el DOM esté listo
   setTimeout(() => {
     const totalWidth = track.scrollWidth / 3;
-    const duration = Math.max(10, totalWidth / 80) * 1000;
+    const duration = Math.max(10, totalWidth / 60) * 1000;
     marqueeAnimation = track.animate(
       [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
       { duration, iterations: Infinity, easing: 'linear' }
