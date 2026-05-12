@@ -292,7 +292,8 @@ body::after {
 
 .task-card {
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-top: none;
   padding: 24px;
   position: relative;
   transition: all 0.3s;
@@ -305,12 +306,12 @@ body::after {
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 100%; height: 1px;
+  width: 100%; height: 2px;
   background: var(--border);
   transition: background 0.3s;
 }
 .task-card:hover {
-  border-color: var(--border-strong);
+  border-color: rgba(255,255,255,0.3);
   transform: translateY(-2px);
 }
 .task-card.urgent::before { background: var(--danger); box-shadow: 0 0 12px rgba(239,68,68,0.5); }
@@ -1587,7 +1588,7 @@ function renderTaskCard(t) {
         <div class="task-id">${escapeHtml(t.id)}</div>
         <div style="display:flex;gap:8px;align-items:center;">
           ${esAbiertaPlus ? `<span class="badge-high-reward">⚡ Recompensa Alta</span>` : ''}
-          ${esEquipo ? `<span class="badge-equipo">👥 Equipo</span>` : ''}
+          ${esEquipo ? `<span class="badge-equipo">Equipo</span>` : ''}
           <span class="${catClass}">${categoria}</span>
           <div class="task-status status-${esAbierta ? 'abierta' : esEquipo ? 'en_progreso' : escapeHtml(estado)}">${esAbierta ? 'abierta' : esEquipo ? 'en progreso' : escapeHtml(estado.replace('_',' '))}</div>
         </div>
