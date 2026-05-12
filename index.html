@@ -1559,8 +1559,31 @@ function renderTaskCard(t) {
     timeLabel = 'Tiempo aproximado';
     timeValue = `<span class="task-stat-value accent">${durationText}</span>`;
   } else {
-    timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Tiempo restante';
-    timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
+    timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Entregar el día';
+
+    // Formatear la fecha límite como "Martes 12 de Mayo, 10:15hs"
+    let fechaFormateada = '—';
+    if (deadline) {
+      const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+      const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+      const diaSemana = dias[deadline.getDay()];
+      const diaMes = deadline.getDate();
+      const mes = meses[deadline.getMonth()];
+      const horas = deadline.getHours().toString().padStart(2,'0');
+      const minutos = deadline.getMinutes().toString().padStart(2,'0');
+      fechaFormateada = `${diaSemana} ${diaMes} de ${mes}, ${horas}:${minutos}hs`;
+    }
+
+    // Titulear si quedan menos de 30 minutos
+    const now = new Date();
+    const diffMs = deadline ? deadline.getTime() - now.getTime() : Infinity;
+    const critico = diffMs > 0 && diffMs < 30 * 60 * 1000;
+
+    if (remaining.urgency === 'overdue') {
+      timeValue = `<span class="task-stat-value danger">${remaining.text}</span>`;
+    } else {
+      timeValue = `<span class="task-stat-value ${timeClass}" style="${critico ? 'animation:pulse-text 1s ease-in-out infinite;' : ''}">${fechaFormateada}</span>`;
+    }
   }
 
   const descText = t.descripcion || '';
