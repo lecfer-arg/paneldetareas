@@ -1257,14 +1257,32 @@ async function fetchCSV(url) {
 // FETCH BTC PRICE
 // ============================================================================
 async function fetchBtcPrice() {
-  try {
-    const resp = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
-    const data = await resp.json();
-    return data.bitcoin.usd;
-  } catch (e) {
-    console.warn('No se pudo obtener precio BTC:', e);
-    return null;
+  // Intentar múltiples APIs en orden por si alguna falla
+  const apis = [
+    async () => {
+      const r = await fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot');
+      const d = await r.json();
+      return parseFloat(d.data.amount);
+    },
+    async () => {
+      const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+      const d = await r.json();
+      return parseFloat(d.price);
+    },
+    async () => {
+      const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+      const d = await r.json();
+      return d.bitcoin.usd;
+    },
+  ];
+  for (const api of apis) {
+    try {
+      const price = await api();
+      if (price && price > 0) return price;
+    } catch(e) {}
   }
+  console.warn('No se pudo obtener precio BTC de ninguna API');
+  return null;
 }
 
 // ============================================================================
@@ -1320,7 +1338,12 @@ async function loadAll() {
     }
   }
 
-  state.btcPrice = await fetchBtcPrice();
+  // Cargar precio BTC en paralelo - no bloquea el render
+  fetchBtcPrice().then(price => {
+    state.btcPrice = price;
+    renderTopbar();
+    renderMarquee();
+  });
   return usingSampleData ? 'sample' : true;
 }
 
