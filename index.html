@@ -151,6 +151,46 @@ body::after {
 .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ---------- MARQUESINA ---------- */
+.marquee-bar {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  height: 34px;
+  overflow: hidden;
+  position: relative;
+  z-index: 49;
+}
+.marquee-label {
+  background: var(--accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.marquee-overflow { overflow: hidden; flex: 1; }
+.marquee-track { display: flex; align-items: center; white-space: nowrap; will-change: transform; }
+.marquee-item {
+  color: #cccccc;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
 /* ---------- TABS ---------- */
 .tabs {
   display: flex;
@@ -1035,6 +1075,14 @@ body::after {
   </div>
 
   <!-- TABS -->
+  <!-- MARQUESINA -->
+  <div class="marquee-bar" id="marquee-bar" style="display:none;">
+    <div class="marquee-label">Novedades</div>
+    <div class="marquee-overflow">
+      <div class="marquee-track" id="marquee-track"></div>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" data-tab="open">Tareas sin asignar <span class="count" id="count-open">0</span></button>
     <button class="tab" data-tab="tasks">Tareas en curso <span class="count" id="count-tasks">0</span></button>
