@@ -1206,7 +1206,16 @@ let state = {
 function loadConfig() {
   try {
     const saved = localStorage.getItem('panel-config');
-    if (saved) return { ...DEFAULT_CONFIG, ...JSON.parse(saved) };
+    if (saved) {
+      const savedObj = JSON.parse(saved);
+      // Las URLs hardcodeadas en DEFAULT_CONFIG tienen prioridad
+      // Solo usamos localStorage para URLs que no están hardcodeadas
+      const merged = { ...savedObj };
+      Object.keys(DEFAULT_CONFIG).forEach(key => {
+        if (DEFAULT_CONFIG[key]) merged[key] = DEFAULT_CONFIG[key];
+      });
+      return merged;
+    }
   } catch(e) {}
   return DEFAULT_CONFIG;
 }
