@@ -1835,6 +1835,82 @@ function renderHistory() {
 // ============================================================================
 // RENDER: TOPBAR
 // ============================================================================
+// ============================================================================
+// MARQUESINA
+// ============================================================================
+let marqueeAnimation = null;
+
+function renderMarquee() {
+  const bar = document.getElementById('marquee-bar');
+  const track = document.getElementById('marquee-track');
+  if (!bar || !track) return;
+
+  // 1. Top 3 del ranking
+  const activos = state.personas.filter(p => (p.activo||'').toUpperCase() !== 'NO');
+  const statsAll = activos.map(calcStats).sort((a,b) => b.totalSats - a.totalSats);
+  let rankingMsg = '';
+  if (statsAll.length >= 3) {
+    rankingMsg = `🏆 Ranking actual → 1° ${statsAll[0].persona.nickname}  ·  2° ${statsAll[1].persona.nickname}  ·  3° ${statsAll[2].persona.nickname}`;
+  } else if (statsAll.length > 0) {
+    rankingMsg = `🏆 Ranking → ` + statsAll.map((s,i) => `${i+1}° ${s.persona.nickname}`).join('  ·  ');
+  }
+
+  // 2. Total sats entregados
+  const totalSatsEntregados = statsAll.reduce((sum, s) => sum + s.totalSats, 0);
+  const satsMsg = `⚡ ${formatNumber(totalSatsEntregados)} Satoshis entregados!`;
+
+  // 3. Hito 100k
+  const hito100k = [];
+  const HITO_KEY = 'panel-hito100k';
+  let hitosGuardados = {};
+  try { hitosGuardados = JSON.parse(localStorage.getItem(HITO_KEY) || '{}'); } catch(e) {}
+  const ahora = Date.now();
+  const DURACION_7D = 7 * 24 * 3600 * 1000;
+  statsAll.forEach(s => {
+    if (s.totalSats >= 100000) {
+      if (!hitosGuardados[s.persona.nickname]) {
+        hitosGuardados[s.persona.nickname] = ahora;
+        try { localStorage.setItem(HITO_KEY, JSON.stringify(hitosGuardados)); } catch(e) {}
+      }
+      if (ahora - hitosGuardados[s.persona.nickname] < DURACION_7D) {
+        hito100k.push(`🎉 ¡Felicitaciones a ${s.persona.nickname} por llegar a sus primeros 100.000 Satoshis!`);
+      }
+    }
+  });
+
+  // 4. Mensajes del Sheet
+  const sheetMsgs = state.comunicados || [];
+
+  const allMsgs = [rankingMsg, satsMsg, ...hito100k, ...sheetMsgs].filter(Boolean);
+
+  if (allMsgs.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+
+  bar.style.display = 'flex';
+  const repeated = [...allMsgs, ...allMsgs, ...allMsgs];
+  track.innerHTML = repeated.map(m => `
+    <div class="marquee-item">
+      <span class="marquee-dot"></span>
+      ${escapeHtml(m)}
+    </div>
+  `).join('');
+
+  if (marqueeAnimation) marqueeAnimation.cancel();
+  setTimeout(() => {
+    const totalWidth = track.scrollWidth / 3;
+    const duration = Math.max(10, totalWidth / 60) * 1000;
+    marqueeAnimation = track.animate(
+      [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
+      { duration, iterations: Infinity, easing: 'linear' }
+    );
+  }, 100);
+}
+
+// ============================================================================
+// RENDER: TOPBAR
+// ============================================================================
 function renderTopbar() {
   const titulo = state.config.titulo_panel || 'Panel de Tareas';
   const subtitulo = state.config.subtitulo || 'Mission Control';
