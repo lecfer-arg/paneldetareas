@@ -2003,16 +2003,90 @@ function clearState() { document.getElementById('state-message').innerHTML = '';
 // ============================================================================
 async function init() {
   showLoading();
-  const result = await loadAll();
-  if (result === false) return;
-  clearState();
-  if (result === 'sample') showSampleNotice();
+  const cfg = loadConfig();
+  const usingSampleData = !cfg.personasURL || !cfg.tareasURL;
 
-  renderTopbar();
-  renderMarquee();
-  renderTasks();
-  renderLeaderboard();
-  renderHistory();
+  if (usingSampleData) {
+    state.personas = SAMPLE_DATA.personas;
+    state.tareas = SAMPLE_DATA.tareas;
+    state.config = SAMPLE_DATA.config;
+    state.participantes = SAMPLE_DATA.participantes;
+    state.comparativas = DEFAULT_COMPARATIVAS;
+    state.comunicados = [];
+    clearState();
+    showSampleNotice();
+    renderTopbar();
+    renderMarquee();
+    renderTasks();
+    renderLeaderboard();
+    renderHistory();
+    fetchBtcPrice().then(price => { state.btcPrice = price; renderTopbar(); renderMarquee(); });
+    return;
+  }
+
+  try {
+    // 1. Cargar datos esenciales primero y renderizar inmediatamente
+    const [personas, tareas, participantes] = await Promise.all([
+      fetchCSV(cfg.personasURL),
+      fetchCSV(cfg.tareasURL),
+      cfg.participantesURL ? fetchCSV(cfg.participantesURL) : Promise.resolve([]),
+    ]);
+    state.personas = personas;
+    state.tareas = tareas;
+    state.participantes = participantes;
+    state.config = SAMPLE_DATA.config;
+    state.comparativas = DEFAULT_COMPARATIVAS;
+    state.comunicados = [];
+
+    // Renderizar de inmediato con lo que tenemos
+    clearState();
+    renderTopbar();
+    renderMarquee();
+    renderTasks();
+    renderLeaderboard();
+    renderHistory();
+
+    // 2. Cargar datos secundarios en paralelo sin bloquear
+    Promise.allSettled([
+      cfg.configURL ? fetchCSV(cfg.configURL) : Promise.resolve(null),
+      cfg.comparativasURL ? fetchCSV(cfg.comparativasURL) : Promise.resolve(null),
+      cfg.comunicadosURL ? fetchCSV(cfg.comunicadosURL) : Promise.resolve(null),
+      fetchBtcPrice(),
+    ]).then(([configRes, compRes, commRes, btcRes]) => {
+      // Config
+      if (configRes.status === 'fulfilled' && configRes.value) {
+        const configObj = {};
+        configRes.value.forEach(r => { configObj[r.parametro] = r.valor; });
+        state.config = { ...SAMPLE_DATA.config, ...configObj };
+      }
+      // Comparativas
+      if (compRes.status === 'fulfilled' && compRes.value) {
+        state.comparativas = compRes.value.map(r => ({
+          desde: parseFloat(r.desde_usd || 0),
+          hasta: parseFloat(r.hasta_usd || 99999),
+          texto: r.texto || '',
+        }));
+      }
+      // Comunicados
+      if (commRes.status === 'fulfilled' && commRes.value) {
+        state.comunicados = commRes.value
+          .filter(r => (r.activo||'').toUpperCase() === 'SI')
+          .map(r => r.mensaje || '')
+          .filter(Boolean);
+      }
+      // Precio BTC
+      if (btcRes.status === 'fulfilled' && btcRes.value) {
+        state.btcPrice = btcRes.value;
+      }
+      // Re-renderizar con los datos completos
+      renderTopbar();
+      renderMarquee();
+      renderLeaderboard();
+    });
+
+  } catch(e) {
+    showError(e.message);
+  }
 }
 
 // ============================================================================
