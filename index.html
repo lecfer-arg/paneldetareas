@@ -1588,7 +1588,6 @@ function renderTaskCard(t) {
         <div class="task-id">${escapeHtml(t.id)}</div>
         <div style="display:flex;gap:8px;align-items:center;">
           ${esAbiertaPlus ? `<span class="badge-high-reward">⚡ Recompensa Alta</span>` : ''}
-          ${esEquipo ? `<span class="badge-equipo">Equipo</span>` : ''}
           <span class="${catClass}">${categoria}</span>
           <div class="task-status status-${esAbierta ? 'abierta' : esEquipo ? 'en_progreso' : escapeHtml(estado)}">${esAbierta ? 'abierta' : esEquipo ? 'en progreso' : escapeHtml(estado.replace('_',' '))}</div>
         </div>
