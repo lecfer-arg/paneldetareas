@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Panel de Tareas — Mission Control</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23000000'/><path d='M13 2L4.5 13.5H11L10 22L20.5 9.5H14L13 2Z' fill='%23F5D800'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -152,61 +151,6 @@ body::after {
 .refresh-btn.spinning svg { animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ---------- MARQUESINA ---------- */
-.marquee-bar {
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  height: 34px;
-  overflow: hidden;
-  position: relative;
-  z-index: 49;
-}
-.marquee-label {
-  background: var(--accent);
-  color: #000;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  padding: 0 14px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  flex-shrink: 0;
-  z-index: 2;
-}
-.marquee-overflow {
-  overflow: hidden;
-  flex: 1;
-}
-.marquee-track {
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  will-change: transform;
-}
-.marquee-item {
-  color: #cccccc;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  padding: 0 32px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.marquee-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
-}
-
 /* ---------- TABS ---------- */
 .tabs {
   display: flex;
@@ -292,8 +236,7 @@ body::after {
 
 .task-card {
   background: var(--bg-card);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-top: none;
+  border: 1px solid var(--border);
   padding: 24px;
   position: relative;
   transition: all 0.3s;
@@ -306,12 +249,12 @@ body::after {
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 100%; height: 2px;
+  width: 100%; height: 1px;
   background: var(--border);
   transition: background 0.3s;
 }
 .task-card:hover {
-  border-color: rgba(255,255,255,0.3);
+  border-color: var(--border-strong);
   transform: translateY(-2px);
 }
 .task-card.urgent::before { background: var(--danger); box-shadow: 0 0 12px rgba(239,68,68,0.5); }
@@ -335,12 +278,7 @@ body::after {
   letter-spacing: 0.15em;
 }
 .task-status { font-family: var(--font-mono); font-size: 9px; padding: 4px 8px; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid currentColor; }
-.badge-express { font-family: var(--font-mono); font-size: 9px; padding: 4px 8px; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid #00E5FF; color: #00E5FF; }
-.badge-media { font-family: var(--font-mono); font-size: 9px; padding: 4px 8px; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid #F7931A; color: #F7931A; }
-.badge-avanzada { font-family: var(--font-mono); font-size: 9px; padding: 4px 8px; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid #A855F7; color: #A855F7; }
-.task-card.cat-express::before { background: #00E5FF; box-shadow: 0 0 12px rgba(0,229,255,0.4); }
-.task-card.cat-media::before { background: #F7931A; box-shadow: 0 0 12px rgba(247,147,26,0.4); }
-.task-card.cat-avanzada::before { background: #A855F7; box-shadow: 0 0 12px rgba(168,85,247,0.4); }
+.badge-high-reward {
   font-family: var(--font-mono);
   font-size: 9px;
   padding: 4px 8px;
@@ -1090,14 +1028,6 @@ body::after {
   </div>
 
   <!-- TABS -->
-  <!-- MARQUESINA -->
-  <div class="marquee-bar" id="marquee-bar" style="display:none;">
-    <div class="marquee-label">Novedades</div>
-    <div class="marquee-overflow">
-      <div class="marquee-track" id="marquee-track"></div>
-    </div>
-  </div>
-
   <div class="tabs">
     <button class="tab active" data-tab="open">Tareas sin asignar <span class="count" id="count-open">0</span></button>
     <button class="tab" data-tab="tasks">Tareas en curso <span class="count" id="count-tasks">0</span></button>
@@ -1195,8 +1125,7 @@ const DEFAULT_CONFIG = {
   tareasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1038238002&single=true&output=csv',
   configURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=319378844&single=true&output=csv',
   participantesURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1202700065&single=true&output=csv',
-  comunicadosURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=612717678&single=true&output=csv',
-  comparativasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1536683713&single=true&output=csv',
+  comparativasURL: '',
 };
 
 // Datos de ejemplo embebidos (se usan si no hay URLs configuradas)
@@ -1259,7 +1188,6 @@ let state = {
   tareas: [],
   participantes: [],
   config: {},
-  comunicados: [],
   comparativas: [],
   btcPrice: null,
   currentTab: 'open',
@@ -1283,10 +1211,6 @@ function saveConfig(cfg) {
 // CSV PARSING
 // ============================================================================
 function parseCSV(text) {
-  // Detectar separador: tab o coma
-  const firstLine = text.split('\n')[0] || '';
-  const sep = firstLine.includes('\t') ? '\t' : ',';
-
   const rows = [];
   let cur = '', row = [], inQuotes = false;
   for (let i = 0; i < text.length; i++) {
@@ -1297,7 +1221,7 @@ function parseCSV(text) {
       else { cur += ch; }
     } else {
       if (ch === '"') { inQuotes = true; }
-      else if (ch === sep) { row.push(cur); cur = ''; }
+      else if (ch === ',') { row.push(cur); cur = ''; }
       else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
       else if (ch === '\r') { /* ignore */ }
       else { cur += ch; }
@@ -1370,19 +1294,6 @@ async function loadAll() {
       } else {
         state.config = SAMPLE_DATA.config;
       }
-      // Cargar comunicados
-      if (cfg.comunicadosURL) {
-        try {
-          const commRows = await fetchCSV(cfg.comunicadosURL);
-          state.comunicados = commRows
-            .filter(r => (r.activo||'').toUpperCase() === 'SI')
-            .map(r => r.mensaje || '')
-            .filter(Boolean);
-        } catch(e) { state.comunicados = []; }
-      } else {
-        state.comunicados = [];
-      }
-
       // Cargar comparativas si hay URL
       if (cfg.comparativasURL) {
         try {
@@ -1509,23 +1420,18 @@ function renderTaskCard(t) {
   const esAbierta = estado === 'abierta' || esAbiertaPlus;
   const esEquipo = estado === 'en_progreso_equipo';
 
-  // Categoría según satoshis base
-  let categoria = '';
-  let catClass = '';
-  if (sats <= 5000) { categoria = 'Express'; catClass = 'badge-express'; }
-  else if (sats <= 15000) { categoria = 'Media'; catClass = 'badge-media'; }
-  else { categoria = 'Avanzada'; catClass = 'badge-avanzada'; }
-
-  // Clase de color de la línea superior según categoría
-  const catCardClass = sats <= 5000 ? 'cat-express' : sats <= 15000 ? 'cat-media' : 'cat-avanzada';
-
   // Participantes de esta tarea
   const partics = state.participantes.filter(p => p.tarea_id === t.id);
-  const lugaresOcupados = partics.length;
+  // Activos: a_tiempo vacío = todavía trabajando
+  const particActivos = partics.filter(p => (p.a_tiempo||'').trim() === '');
+  // Entregados: a_tiempo tiene valor
+  const particEntregados = partics.filter(p => (p.a_tiempo||'').trim() !== '');
+  // Lugares ocupados = solo activos (los entregados liberaron su lugar)
+  const lugaresOcupados = esEquipo ? particActivos.length : partics.length;
   const lugaresMax = 10;
   const lugaresLibres = Math.max(0, lugaresMax - lugaresOcupados);
 
-  let cardClass = 'task-card ' + catCardClass + ' ';
+  let cardClass = 'task-card ';
   let timeClass = '';
   if (estado === 'completada') { cardClass += 'completed'; }
   else if (estado === 'no_completada') { cardClass += 'failed'; }
@@ -1559,41 +1465,19 @@ function renderTaskCard(t) {
     timeLabel = 'Tiempo aproximado';
     timeValue = `<span class="task-stat-value accent">${durationText}</span>`;
   } else {
-    timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Entregar el día';
-
-    // Formatear la fecha límite como "Martes 12 de Mayo, 10:15hs"
-    let fechaFormateada = '—';
-    if (deadline) {
-      const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-      const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-      const diaSemana = dias[deadline.getDay()];
-      const diaMes = deadline.getDate();
-      const mes = meses[deadline.getMonth()];
-      const horas = deadline.getHours().toString().padStart(2,'0');
-      const minutos = deadline.getMinutes().toString().padStart(2,'0');
-      fechaFormateada = `${diaSemana} ${diaMes} de ${mes}, ${horas}:${minutos}hs`;
-    }
-
-    // Titulear si quedan menos de 30 minutos
-    const now = new Date();
-    const diffMs = deadline ? deadline.getTime() - now.getTime() : Infinity;
-    const critico = diffMs > 0 && diffMs < 30 * 60 * 1000;
-
-    if (remaining.urgency === 'overdue') {
-      timeValue = `<span class="task-stat-value danger">${remaining.text}</span>`;
-    } else {
-      timeValue = `<span class="task-stat-value ${timeClass}" style="${critico ? 'animation:pulse-text 1s ease-in-out infinite;' : ''}">${fechaFormateada}</span>`;
-    }
+    timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Tiempo restante';
+    timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
   }
 
   const descText = t.descripcion || '';
   const isLongDesc = descText.length > 180;
   const descId = `desc-${t.id}`;
 
-  // Avatares de participantes
-  const avataresHTML = partics.length > 0
-    ? partics.map(p => avatarHTML(findPersona(p.nickname))).join('')
-    : `<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);font-style:italic;">${esAbierta ? 'Disponible para tomar' : 'Sin participantes'}</span>`;
+  // Avatares de participantes — solo activos (no entregaron aún)
+  const avataresActivos = esEquipo ? particActivos : partics;
+  const avataresHTML = avataresActivos.length > 0
+    ? avataresActivos.map(p => avatarHTML(findPersona(p.nickname))).join('')
+    : `<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);font-style:italic;">${esAbierta ? 'Disponible para tomar' : 'Sin participantes activos'}</span>`;
 
   // Barra de progreso del equipo
   const barraEquipo = esEquipo ? `
@@ -1611,7 +1495,7 @@ function renderTaskCard(t) {
         <div class="task-id">${escapeHtml(t.id)}</div>
         <div style="display:flex;gap:8px;align-items:center;">
           ${esAbiertaPlus ? `<span class="badge-high-reward">⚡ Recompensa Alta</span>` : ''}
-          <span class="${catClass}">${categoria}</span>
+          ${esEquipo ? `<span class="badge-equipo">👥 Equipo</span>` : ''}
           <div class="task-status status-${esAbierta ? 'abierta' : esEquipo ? 'en_progreso' : escapeHtml(estado)}">${esAbierta ? 'abierta' : esEquipo ? 'en progreso' : escapeHtml(estado.replace('_',' '))}</div>
         </div>
       </div>
@@ -1632,8 +1516,8 @@ function renderTaskCard(t) {
         </div>
       </div>
 
-      ${esAbierta ? `<a class="task-take-btn" href="https://api.whatsapp.com/send?phone=${encodeURIComponent((t.cel_responsable||'543815610623').replace(/\D/g,''))}&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>` : ''}
-      ${esEquipo && lugaresLibres > 0 ? `<a class="task-join-btn" href="https://api.whatsapp.com/send?phone=${encodeURIComponent((t.cel_responsable||'543815610623').replace(/\D/g,''))}&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>` : ''}
+      ${esAbierta ? `<a class="task-take-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>` : ''}
+      ${esEquipo && lugaresLibres > 0 ? `<a class="task-join-btn" href="https://api.whatsapp.com/send?phone=543815610623&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>` : ''}
 
       <div class="task-footer">
         <div class="task-stat">
@@ -1655,14 +1539,6 @@ function renderTaskCard(t) {
 
 function renderTasks() {
   const inProgress = state.tareas.filter(t => ['en_progreso','en_progreso_equipo'].includes((t.estado||'').toLowerCase().trim()));
-
-  // Tareas de equipo con lugares disponibles (aparecen también en sin asignar)
-  const equipoConLugares = state.tareas.filter(t => {
-    if ((t.estado||'').toLowerCase().trim() !== 'en_progreso_equipo') return false;
-    const ocupados = state.participantes.filter(p => p.tarea_id === t.id).length;
-    return ocupados < 10;
-  });
-
   const open = state.tareas
     .filter(t => ['abierta','abierta_plus'].includes((t.estado||'').toLowerCase().trim()))
     .sort((a, b) => {
@@ -1673,20 +1549,13 @@ function renderTasks() {
       return 0;
     });
 
-  // Combinar: primero abierta_plus, luego equipo con lugares, luego abiertas normales
-  const openCombined = [
-    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta_plus'),
-    ...equipoConLugares,
-    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta'),
-  ];
-
   document.getElementById('tasks-active').innerHTML =
     inProgress.length ? inProgress.map(renderTaskCard).join('') : emptyState('No hay tareas en progreso');
   document.getElementById('tasks-open').innerHTML =
-    openCombined.length ? openCombined.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
+    open.length ? open.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
 
   document.getElementById('count-tasks').textContent = inProgress.length;
-  document.getElementById('count-open').textContent = openCombined.length;
+  document.getElementById('count-open').textContent = open.length;
 }
 
 function emptyState(msg) {
@@ -1716,7 +1585,10 @@ function calcStats(persona) {
     const tarea = state.tareas.find(t => t.id === p.tarea_id);
     if (!tarea) return;
     const estado = (tarea.estado||'').toLowerCase().trim();
-    if (!['completada','no_completada'].includes(estado)) return; // solo tareas finalizadas
+    // Para tareas de equipo: contar si la persona ya entregó (a_tiempo tiene valor)
+    const yaEntrego = (p.a_tiempo||'').trim() !== '';
+    if (!['completada','no_completada'].includes(estado) && !yaEntrego) return;
+    if (!['completada','no_completada'].includes(estado) && !yaEntrego) return;
 
     const onTime = (p.a_tiempo||'').toUpperCase() === 'SI';
     const noErrors = (p.sin_errores||'').toUpperCase() === 'SI';
@@ -1741,20 +1613,10 @@ function calcStats(persona) {
   const onTimePercent = totalFinished > 0 ? Math.round((onTimeCount / totalFinished) * 100) : 0;
   const totalSats = baseSats + bonusSats;
 
-  // Tareas en proceso actualmente
-  const inProcess = state.participantes.filter(p => {
-    if (p.nickname !== persona.nickname) return false;
-    const tarea = state.tareas.find(t => t.id === p.tarea_id);
-    if (!tarea) return false;
-    const estado = (tarea.estado||'').toLowerCase().trim();
-    return ['en_progreso','en_progreso_equipo'].includes(estado);
-  }).length;
-
   return {
     persona,
     completed,
     failed,
-    inProcess,
     onTimePercent,
     totalSats,
     baseSats,
@@ -1794,12 +1656,11 @@ function renderLeaderboard() {
           </div>
           <div class="lb-sats-value">${formatNumber(s.baseSats)} sats</div>
           <div class="lb-bonus-value">+ ${formatNumber(s.bonusSats)} bonus</div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:#cccccc;margin-top:2px;">Total de Sats recibidos: <span style="color:#ffffff;font-weight:600;">${formatNumber(s.totalSats)}</span></div>
           <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
           <div class="lb-mobile-extra">
             <span style="color:#777777;">${formatUSD(usd)}</span>
             <span style="color:var(--text-dim);margin-left:10px;">⏱ ${s.onTimePercent}%</span>
-            <span style="color:var(--text-dim);margin-left:10px;">✓ <span style="animation:pulse-text 2s ease-in-out infinite;color:#ffffff;">${s.inProcess}</span> / ${s.completed}</span>
+            <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
           </div>
         </div>
         <div class="lb-value lb-usd-desktop">
@@ -1807,7 +1668,7 @@ function renderLeaderboard() {
           ${comparativa ? `<div style="font-family:var(--font-mono);font-size:10px;color:#777777;margin-top:4px;line-height:1.4;">${escapeHtml(comparativa)}</div>` : ''}
         </div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
-        <div class="lb-value lb-stats-extra"><span style="animation:pulse-text 2s ease-in-out infinite;color:#ffffff;">${s.inProcess}</span> <span style="color:var(--text-faint);">/</span> <span style="color:#ffffff;">${s.completed}</span></div>
+        <div class="lb-value lb-stats-extra">${s.completed} <span style="color:var(--text-faint);">/ ${s.failed}</span></div>
       </div>
     `;
   }).join('');
@@ -1820,8 +1681,18 @@ function renderLeaderboard() {
 // RENDER: HISTORY
 // ============================================================================
 function renderHistory() {
-  const finished = state.tareas
-    .filter(t => ['completada','no_completada'].includes((t.estado||'').toLowerCase().trim()))
+  // Tareas finalizadas
+  const tareasFinalizadas = state.tareas
+    .filter(t => ['completada','no_completada'].includes((t.estado||'').toLowerCase().trim()));
+
+  // Tareas en_progreso_equipo con al menos un participante que ya entregó
+  const tareasEquipoEnCurso = state.tareas.filter(t => {
+    if ((t.estado||'').toLowerCase().trim() !== 'en_progreso_equipo') return false;
+    const partics = state.participantes.filter(p => p.tarea_id === t.id);
+    return partics.some(p => (p.a_tiempo||'').trim() !== '');
+  });
+
+  const todasParaHistorial = [...tareasFinalizadas, ...tareasEquipoEnCurso]
     .sort((a,b) => {
       const da = parseDate(a.fecha_limite);
       const db = parseDate(b.fecha_limite);
@@ -1829,47 +1700,59 @@ function renderHistory() {
     })
     .slice(0, parseInt(state.config.historial_max_items || 20));
 
-  if (!finished.length) {
+  if (!todasParaHistorial.length) {
     document.getElementById('history-list').innerHTML = emptyState('Aún no hay tareas finalizadas');
     document.getElementById('count-history').textContent = '0';
     return;
   }
 
-  const html = finished.map(t => {
-    const persona = findPersona(t.asignado_a);
+  const html = todasParaHistorial.map(t => {
     const estado = (t.estado||'').toLowerCase().trim();
     const isOk = estado === 'completada';
+    const esEquipoEnCurso = estado === 'en_progreso_equipo';
     const base = parseInt(t.satoshis_base||0);
     const bonus = parseInt(t.satoshis_bonus||0);
-    // Leer participantes de esta tarea
+
     const partics = state.participantes.filter(p => p.tarea_id === t.id);
-    // Para el historial mostramos el resultado del primer participante
-    // (o el mejor resultado si hay varios)
-    const onTime = partics.some(p => (p.a_tiempo||'').toUpperCase() === 'SI');
-    const noErrors = partics.some(p => (p.sin_errores||'').toUpperCase() === 'SI');
+    // Entregados: a_tiempo tiene valor
+    const entregados = partics.filter(p => (p.a_tiempo||'').trim() !== '');
+    // Activos: a_tiempo vacío
+    const activos = partics.filter(p => (p.a_tiempo||'').trim() === '');
+
+    const onTime = entregados.some(p => (p.a_tiempo||'').toUpperCase() === 'SI');
+    const noErrors = entregados.some(p => (p.sin_errores||'').toUpperCase() === 'SI');
+
     let sats = 0;
-    if (isOk) {
-     if (onTime) {
-      sats = base + (noErrors ? bonus : 0);
-     } else {
-       sats = base - bonus;
-     }
+    if (isOk || esEquipoEnCurso) {
+      if (onTime) { sats = base + (noErrors ? bonus : 0); }
+      else if (entregados.length > 0) { sats = base - bonus; }
     }
+
     const date = parseDate(t.fecha_limite);
     const dateStr = date ? date.toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric'}) : '—';
 
     let badgeText, badgeClass;
-    if (isOk && onTime && noErrors) { badgeText = 'PERFECTA'; badgeClass = 'ok'; }
+    if (esEquipoEnCurso) { badgeText = 'EN CURSO'; badgeClass = 'ok'; }
+    else if (isOk && onTime && noErrors) { badgeText = 'PERFECTA'; badgeClass = 'ok'; }
     else if (isOk && onTime) { badgeText = 'OK'; badgeClass = 'ok'; }
     else if (isOk && !onTime) { badgeText = 'TARDE'; badgeClass = 'fail'; }
     else { badgeText = 'FALLÓ'; badgeClass = 'fail'; }
 
+    // Líneas de participantes
+    const resueltoPor = entregados.length > 0
+      ? `<div style="font-family:var(--font-mono);font-size:11px;color:#FFD700;margin-top:3px;">Resuelto por: ${entregados.map(p => escapeHtml(p.nickname)).join(' - ')}</div>`
+      : '';
+    const enProcesoPor = (esEquipoEnCurso && activos.length > 0)
+      ? `<div style="font-family:var(--font-mono);font-size:11px;color:#888888;margin-top:2px;">En proceso por: ${activos.map(p => escapeHtml(p.nickname)).join(' - ')}</div>`
+      : '';
+
     return `
-      <div class="history-item ${isOk ? 'completed' : 'failed'}">
+      <div class="history-item ${isOk || esEquipoEnCurso ? 'completed' : 'failed'}">
         <div>
           <div class="history-date">${dateStr}</div>
           <div class="history-title">${escapeHtml(t.titulo)}</div>
-          <div class="history-person" style="color:#FFD700;">Resuelto por: ${partics.length > 0 ? partics.map(p => escapeHtml(p.nickname)).join(' - ') : '—'}</div>
+          ${resueltoPor}
+          ${enProcesoPor}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
           <div class="history-badge ${badgeClass}">${badgeText}</div>
@@ -1880,89 +1763,7 @@ function renderHistory() {
   }).join('');
 
   document.getElementById('history-list').innerHTML = html;
-  document.getElementById('count-history').textContent = finished.length;
-}
-
-// ============================================================================
-// MARQUESINA
-// ============================================================================
-let marqueeAnimation = null;
-
-function renderMarquee() {
-  const bar = document.getElementById('marquee-bar');
-  const track = document.getElementById('marquee-track');
-
-  // 1. Top 3 del ranking
-  const activos = state.personas.filter(p => (p.activo||'').toUpperCase() !== 'NO');
-  const stats = activos.map(calcStats).sort((a,b) => b.totalSats - a.totalSats);
-  let rankingMsg = '';
-  if (stats.length >= 3) {
-    rankingMsg = `🏆 Ranking actual → 1° ${stats[0].persona.nickname}  ·  2° ${stats[1].persona.nickname}  ·  3° ${stats[2].persona.nickname}`;
-  } else if (stats.length > 0) {
-    rankingMsg = `🏆 Ranking → ` + stats.map((s,i) => `${i+1}° ${s.persona.nickname}`).join('  ·  ');
-  }
-
-  // 1b. Total de sats entregados
-  const totalSatsEntregados = stats.reduce((sum, s) => sum + s.totalSats, 0);
-  const satsMsg = `⚡ ${formatNumber(totalSatsEntregados)} Satoshis entregados!`;
-
-  // 2. Hito 100k: personas que superaron 100.000 sats y lo lograron en las últimas 48hs
-  // Usamos localStorage para recordar a quiénes ya felicitamos
-  const hito100k = [];
-  const HITO_KEY = 'panel-hito100k';
-  let hitosGuardados = {};
-  try { hitosGuardados = JSON.parse(localStorage.getItem(HITO_KEY) || '{}'); } catch(e) {}
-
-  const ahora = Date.now();
-  const DURACION_48H = 7 * 24 * 3600 * 1000;
-
-  stats.forEach(s => {
-    if (s.totalSats >= 100000) {
-      if (!hitosGuardados[s.persona.nickname]) {
-        // Primera vez que supera 100k: guardamos el timestamp
-        hitosGuardados[s.persona.nickname] = ahora;
-        try { localStorage.setItem(HITO_KEY, JSON.stringify(hitosGuardados)); } catch(e) {}
-      }
-      const tiempoDesde = ahora - hitosGuardados[s.persona.nickname];
-      if (tiempoDesde < DURACION_48H) {
-        hito100k.push(`🎉 ¡Felicitaciones a ${s.persona.nickname} por llegar a sus primeros 100.000 Satoshis!`);
-      }
-    }
-  });
-
-  // 3. Mensajes del Google Sheet
-  const sheetMsgs = state.comunicados || [];
-
-  // Combinar todos los mensajes
-  const allMsgs = [rankingMsg, satsMsg, ...hito100k, ...sheetMsgs].filter(Boolean);
-
-  if (allMsgs.length === 0) {
-    bar.style.display = 'none';
-    return;
-  }
-
-  bar.style.display = 'flex';
-
-  // Duplicar para loop infinito
-  const repeated = [...allMsgs, ...allMsgs, ...allMsgs];
-  track.innerHTML = repeated.map(m => `
-    <div class="marquee-item">
-      <span class="marquee-dot"></span>
-      ${escapeHtml(m)}
-    </div>
-  `).join('');
-
-  // Velocidad: ~80px por segundo
-  if (marqueeAnimation) marqueeAnimation.cancel();
-  // Pequeño delay para que el DOM esté listo
-  setTimeout(() => {
-    const totalWidth = track.scrollWidth / 3;
-    const duration = Math.max(10, totalWidth / 60) * 1000;
-    marqueeAnimation = track.animate(
-      [{ transform: 'translateX(0)' }, { transform: `translateX(-${totalWidth}px)` }],
-      { duration, iterations: Infinity, easing: 'linear' }
-    );
-  }, 100);
+  document.getElementById('count-history').textContent = todasParaHistorial.length;
 }
 
 // ============================================================================
@@ -1994,7 +1795,7 @@ function renderTopbar() {
     `<div style="text-align:right;">${formatNumber(totalSats)}</div>${usdLine}`;
 
   const resueltas = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'completada').length;
-  const enProgreso = state.tareas.filter(t => ['en_progreso','en_progreso_equipo'].includes((t.estado||'').toLowerCase().trim())).length;
+  const enProgreso = state.tareas.filter(t => (t.estado||'').toLowerCase().trim() === 'en_progreso').length;
   document.getElementById('total-resueltas').innerHTML =
     `<span style="color:#cccccc;">${resueltas}</span>`;
   document.getElementById('total-enproceso').innerHTML =
@@ -2066,7 +1867,6 @@ async function init() {
   if (result === 'sample') showSampleNotice();
 
   renderTopbar();
-  renderMarquee();
   renderTasks();
   renderLeaderboard();
   renderHistory();
