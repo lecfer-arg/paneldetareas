@@ -793,14 +793,14 @@ body::after {
 .row-h-usd { font-size: 10px; color: #ffffff; }
 .btn-tomar-h {
   background: var(--accent); color: #000; border: none;
-  padding: 5px 8px; font-size: 7px; font-weight: 700;
+  padding: 8px 14px; font-size: 9px; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
   white-space: nowrap; flex-shrink: 0; text-decoration: none; text-align: center;
   animation: pulse-btn 2s ease-in-out infinite;
 }
 .btn-sumar-h {
   background: transparent; color: #00E5FF; border: 1px solid #00E5FF;
-  padding: 5px 8px; font-size: 7px; font-weight: 700;
+  padding: 8px 14px; font-size: 9px; font-weight: 700;
   letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
   white-space: nowrap; flex-shrink: 0; text-decoration: none; text-align: center;
   animation: pulse-join 2s ease-in-out infinite;
@@ -1603,6 +1603,21 @@ function renderTaskRowH(t) {
   const isLong = descText.length > 160;
   const descId = `rowh-${t.id}`;
 
+  const inicio = parseDate(t.fecha_inicio);
+  const deadline = parseDate(t.fecha_limite);
+  let durationText = '—';
+  if (inicio && deadline) {
+    const diff = deadline.getTime() - inicio.getTime();
+    if (diff > 0) {
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      if (days > 0) durationText = `${days}d ${hours}h`;
+      else if (hours > 0) durationText = `${hours}h ${minutes > 0 ? minutes + 'm' : ''}`.trim();
+      else durationText = `${minutes}m`;
+    }
+  }
+
   const celular = (t.cel_responsable||'543815610623').replace(/\D/g,'');
   const btnHTML = esEquipo && lugaresLibres > 0
     ? `<a class="btn-sumar-h" href="https://api.whatsapp.com/send?phone=${celular}&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>`
@@ -1621,11 +1636,17 @@ function renderTaskRowH(t) {
       ${isLong ? `<span class="row-h-vermас" onclick="toggleRowH('${descId}',this)">ver más</span>` : ''}
       ${particSection}
       <div class="row-h-bottom">
-        <div class="row-h-recompensa">
-          <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Recompensa</div>
-          <div class="row-h-sats ${catSatsClass}">${formatNumber(sats)} sats</div>
-          ${bonus > 0 ? `<div class="row-h-bonus">+${formatNumber(bonus)} bonus</div>` : ''}
-          <div class="row-h-usd">USD ${usd != null ? usd.toFixed(2) : '0.00'} (Aprox.)</div>
+        <div style="display:flex;gap:24px;align-items:flex-end;">
+          <div class="row-h-recompensa">
+            <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Tiempo aproximado</div>
+            <div style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--accent);">${durationText}</div>
+          </div>
+          <div class="row-h-recompensa">
+            <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Recompensa</div>
+            <div class="row-h-sats ${catSatsClass}">${formatNumber(sats)} sats</div>
+            ${bonus > 0 ? `<div class="row-h-bonus">+${formatNumber(bonus)} bonus</div>` : ''}
+            <div class="row-h-usd">USD ${usd != null ? usd.toFixed(2) : '0.00'} (Aprox.)</div>
+          </div>
         </div>
         ${btnHTML}
       </div>
