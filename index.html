@@ -1824,11 +1824,18 @@ function renderTasks() {
       return 0;
     });
 
-  // Orden: abierta_plus → equipo con lugares → abiertas normales
+  // Función para ordenar por ID descendente (T016 antes que T015)
+  const sortByIdDesc = (a, b) => {
+    const numA = parseInt((a.id||'').replace(/\D/g,'')) || 0;
+    const numB = parseInt((b.id||'').replace(/\D/g,'')) || 0;
+    return numB - numA;
+  };
+
+  // Orden: abierta_plus → equipo con lugares → abiertas normales, cada grupo por ID desc
   const openCombined = [
-    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta_plus'),
-    ...equipoConLugares,
-    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta'),
+    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta_plus').sort(sortByIdDesc),
+    ...equipoConLugares.sort(sortByIdDesc),
+    ...open.filter(t => (t.estado||'').toLowerCase().trim() === 'abierta').sort(sortByIdDesc),
   ];
 
   document.getElementById('tasks-active').innerHTML =
