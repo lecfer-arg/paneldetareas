@@ -1859,7 +1859,7 @@ function renderHistory() {
     const estado = (t.estado||'').toLowerCase().trim();
     const isOk = estado === 'completada';
     const esEquipoEnCurso = estado === 'en_progreso_equipo';
-    const base = parseInt(t.satoshis_base||0);
+    const satBase = parseInt(t.satoshis_base||0);
     const bonus = parseInt(t.satoshis_bonus||0);
 
     const partics = state.participantes.filter(p => p.tarea_id === t.id);
@@ -1873,11 +1873,12 @@ function renderHistory() {
 
     let sats = 0;
     if (isOk || esEquipoEnCurso) {
-      if (onTime) { sats = base + (noErrors ? bonus : 0); }
-      else if (entregados.length > 0) { sats = base - bonus; }
+      if (onTime) { sats = satBase + (noErrors ? bonus : 0); }
+      else if (entregados.length > 0) { sats = satBase - bonus; }
     }
 
-    const date = parseDate(t.fecha_limite);
+    // Badge de categoría
+    let catBadge = '';
     const dateStr = date ? date.toLocaleDateString('es-AR', { day:'2-digit', month:'short', year:'numeric'}) : '—';
 
     let badgeText, badgeClass;
@@ -1895,12 +1896,11 @@ function renderHistory() {
       ? `<div style="font-family:var(--font-mono);font-size:11px;color:#888888;margin-top:2px;">En proceso por: ${activos.map(p => escapeHtml(p.nickname)).join(' - ')}</div>`
       : '';
 
-    // Badge de categoría
-    const satBase = parseInt(t.satoshis_base||0);
-    let catBadge = '';
     if (satBase <= 5000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #00E5FF;color:#00E5FF;">Express</span>`;
     else if (satBase <= 15000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #F7931A;color:#F7931A;">Media</span>`;
     else catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #A855F7;color:#A855F7;">Avanzada</span>`;
+
+    const date = parseDate(t.fecha_limite);
 
     return `
       <div class="history-item ${isOk || esEquipoEnCurso ? 'completed' : 'failed'}">
