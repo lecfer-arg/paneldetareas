@@ -1568,8 +1568,22 @@ function renderTaskCard(t) {
     timeLabel = 'Tiempo aproximado';
     timeValue = `<span class="task-stat-value accent">${durationText}</span>`;
   } else {
-    timeLabel = remaining.urgency === 'overdue' ? 'Atrasada' : 'Tiempo restante';
-    timeValue = `<span class="task-stat-value ${timeClass}">${remaining.text}</span>`;
+    // Tareas en progreso: mostrar fecha de entrega en vez de countdown
+    const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    if (remaining.urgency === 'overdue') {
+      timeLabel = 'Atrasada';
+      timeValue = `<span class="task-stat-value danger">${remaining.text}</span>`;
+    } else {
+      const now = new Date();
+      const diffMs = deadline ? deadline.getTime() - now.getTime() : Infinity;
+      const critico = diffMs > 0 && diffMs < 30 * 60 * 1000;
+      const fechaStr = deadline
+        ? `${dias[deadline.getDay()]} ${deadline.getDate()} de ${meses[deadline.getMonth()]}, ${deadline.getHours().toString().padStart(2,'0')}:${deadline.getMinutes().toString().padStart(2,'0')}hs`
+        : '—';
+      timeLabel = 'Entregar el día';
+      timeValue = `<span class="task-stat-value ${timeClass}" style="font-size:11px;white-space:nowrap;${critico ? 'animation:pulse-text 1s ease-in-out infinite;' : ''}">${fechaStr}</span>`;
+    }
   }
 
   const descText = t.descripcion || '';
@@ -1626,6 +1640,12 @@ function renderTaskCard(t) {
         <div class="task-stat">
           <div class="task-stat-label">${timeLabel}</div>
           ${timeValue}
+          ${esAbierta && deadline ? (() => {
+            const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+            const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+            const fechaStr = `${dias[deadline.getDay()]} ${deadline.getDate()} de ${meses[deadline.getMonth()]}, ${deadline.getHours().toString().padStart(2,'0')}:${deadline.getMinutes().toString().padStart(2,'0')}hs`;
+            return `<div class="task-stat-label" style="margin-top:6px;">Entregar el día</div><div class="task-stat-sub" style="color:#cccccc;font-size:11px;">${fechaStr}</div>`;
+          })() : ''}
         </div>
         <div class="task-stat">
           <div class="task-stat-label">Recompensa</div>
