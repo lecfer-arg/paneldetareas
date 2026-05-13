@@ -738,7 +738,8 @@ body::after {
 .history-badge.fail { color: var(--danger); }
 
 /* ---------- TAREAS SIN ASIGNAR — DISEÑO HORIZONTAL ---------- */
-.tasks-list { display: flex; flex-direction: column; gap: 8px; }
+.tasks-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (max-width: 768px) { .tasks-list { grid-template-columns: 1fr; } }
 .task-row-h {
   background: var(--bg-card);
   border: 1px solid rgba(255,255,255,0.12);
@@ -1636,15 +1637,17 @@ function renderTaskRowH(t) {
       ${isLong ? `<span class="row-h-vermас" onclick="toggleRowH('${descId}',this)">ver más</span>` : ''}
       ${particSection}
       <div class="row-h-bottom">
-        <div style="display:flex;gap:24px;align-items:flex-end;">
+        <div style="display:flex;gap:24px;align-items:flex-start;">
           <div class="row-h-recompensa">
             <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Tiempo aproximado</div>
             <div style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:var(--accent);">${durationText}</div>
           </div>
           <div class="row-h-recompensa">
             <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Recompensa</div>
-            <div class="row-h-sats ${catSatsClass}">${formatNumber(sats)} sats</div>
-            ${bonus > 0 ? `<div class="row-h-bonus">+${formatNumber(bonus)} bonus</div>` : ''}
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <div class="row-h-sats ${catSatsClass}">${formatNumber(sats)} sats</div>
+              ${bonus > 0 ? `<div class="row-h-bonus">+${formatNumber(bonus)} bonus</div>` : ''}
+            </div>
             <div class="row-h-usd">USD ${usd != null ? usd.toFixed(2) : '0.00'} (Aprox.)</div>
           </div>
         </div>
