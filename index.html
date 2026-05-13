@@ -1405,6 +1405,8 @@ async function loadAll() {
     state.btcPrice = price;
     renderTopbar();
     renderMarquee();
+    renderTasks();
+    renderLeaderboard();
   });
   return usingSampleData ? 'sample' : true;
 }
@@ -2081,7 +2083,7 @@ async function init() {
     renderTasks();
     renderLeaderboard();
     renderHistory();
-    fetchBtcPrice().then(price => { state.btcPrice = price; renderTopbar(); renderMarquee(); });
+    fetchBtcPrice().then(price => { state.btcPrice = price; renderTopbar(); renderMarquee(); renderTasks(); renderLeaderboard(); });
     return;
   }
 
