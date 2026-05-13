@@ -737,6 +737,75 @@ body::after {
 .history-badge.ok { color: var(--success); }
 .history-badge.fail { color: var(--danger); }
 
+/* ---------- TAREAS SIN ASIGNAR — DISEÑO HORIZONTAL ---------- */
+.tasks-list { display: flex; flex-direction: column; gap: 8px; }
+.task-row-h {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-top: none;
+  padding: 14px 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.task-row-h::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.task-row-h.cat-express::before { background: #00E5FF; }
+.task-row-h.cat-media::before { background: #F7931A; }
+.task-row-h.cat-avanzada::before { background: #A855F7; }
+.task-row-h:hover { background: #141414; }
+.row-h-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.row-h-id { font-size: 10.5px; color: #fff; letter-spacing: 0.15em; margin-right: 4px; }
+.row-h-title {
+  font-size: 14px; font-weight: 600; color: #fff; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  text-transform: uppercase; letter-spacing: 0.03em;
+}
+.row-h-desc {
+  font-size: 11px; color: #888; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.row-h-desc.expanded { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.row-h-vermас {
+  font-size: 8px; color: var(--accent); letter-spacing: 0.08em; text-transform: lowercase;
+  cursor: pointer; background: none; border: none; padding: 0; margin-top: 2px;
+  font-family: var(--font-mono); font-weight: 400; display: inline;
+}
+.row-h-partics { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+.row-h-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 2px solid var(--accent); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--accent); font-weight: 600; overflow: hidden; flex-shrink: 0;
+}
+.row-h-av img { width: 100%; height: 100%; object-fit: cover; }
+.row-h-lugares { font-size: 9px; color: #00E5FF; }
+.row-h-bottom {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 12px; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border);
+}
+.row-h-recompensa { display: flex; flex-direction: column; gap: 2px; }
+.row-h-sats { font-size: 16px; font-weight: 700; }
+.row-h-sats.express { color: #00E5FF; }
+.row-h-sats.media { color: var(--accent); }
+.row-h-sats.avanzada { color: #A855F7; }
+.row-h-bonus { font-size: 10px; color: var(--success); }
+.row-h-usd { font-size: 10px; color: #ffffff; }
+.btn-tomar-h {
+  background: var(--accent); color: #000; border: none;
+  padding: 5px 8px; font-size: 7px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0; text-decoration: none; text-align: center;
+  animation: pulse-btn 2s ease-in-out infinite;
+}
+.btn-sumar-h {
+  background: transparent; color: #00E5FF; border: 1px solid #00E5FF;
+  padding: 5px 8px; font-size: 7px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+  white-space: nowrap; flex-shrink: 0; text-decoration: none; text-align: center;
+  animation: pulse-join 2s ease-in-out infinite;
+}
+
 /* ---------- LOADING / ERROR / EMPTY ---------- */
 .state-message {
   text-align: center;
@@ -1494,6 +1563,82 @@ function formatUSD(usd) {
 // ============================================================================
 // RENDER: TASK CARDS
 // ============================================================================
+function renderTaskRowH(t) {
+  const estado = (t.estado||'').toLowerCase().trim();
+  const sats = parseInt(t.satoshis_base || 0);
+  const bonus = parseInt(t.satoshis_bonus || 0);
+  const usd = satsToUSD(sats + bonus);
+  const esEquipo = estado === 'en_progreso_equipo';
+  const esAbiertaPlus = estado === 'abierta_plus';
+
+  let catClass, catSatsClass, badgeCat, badgeEstado;
+  if (sats <= 5000) { catClass = 'cat-express'; catSatsClass = 'express'; badgeCat = `<span class="badge-express" style="font-family:var(--font-mono);font-size:8px;padding:3px 7px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #00E5FF;color:#00E5FF;white-space:nowrap;">Express</span>`; }
+  else if (sats <= 15000) { catClass = 'cat-media'; catSatsClass = 'media'; badgeCat = `<span class="badge-media" style="font-family:var(--font-mono);font-size:8px;padding:3px 7px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #F7931A;color:#F7931A;white-space:nowrap;">Media</span>`; }
+  else { catClass = 'cat-avanzada'; catSatsClass = 'avanzada'; badgeCat = `<span class="badge-avanzada" style="font-family:var(--font-mono);font-size:8px;padding:3px 7px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #A855F7;color:#A855F7;white-space:nowrap;">Avanzada</span>`; }
+
+  const estadoLabel = esEquipo ? 'en progreso' : esAbiertaPlus ? 'abierta' : estado;
+  const estadoColor = (esEquipo || estado === 'en_progreso') ? 'color:#F7931A;animation:pulse-text 2s ease-in-out infinite;' : 'color:#777;';
+  badgeEstado = `<span style="font-family:var(--font-mono);font-size:8px;padding:3px 7px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid currentColor;white-space:nowrap;${estadoColor}">${estadoLabel}</span>`;
+
+  const partics = state.participantes.filter(p => p.tarea_id === t.id);
+  const particActivos = partics.filter(p => (p.a_tiempo||'').trim() === '');
+  const lugaresOcupados = particActivos.length;
+  const lugaresLibres = Math.max(0, 10 - lugaresOcupados);
+
+  const avataresHTML = particActivos.map(p => {
+    const persona = findPersona(p.nickname);
+    const color = persona?.color_acento || 'var(--accent)';
+    const inicial = p.nickname.charAt(0).toUpperCase();
+    const fotoUrl = persona?.foto_url || '';
+    return `<div class="row-h-av" style="border-color:${color};color:${color};">${fotoUrl ? `<img src="${escapeHtml(fotoUrl)}" alt="${escapeHtml(p.nickname)}" onerror="this.replaceWith(document.createTextNode('${inicial}'))">` : inicial}</div>`;
+  }).join('');
+
+  const particSection = esEquipo ? `
+    <div class="row-h-partics">
+      ${avataresHTML}
+      <span class="row-h-lugares">${lugaresLibres > 0 ? `· ${lugaresLibres} lugar${lugaresLibres !== 1 ? 'es' : ''} disponible${lugaresLibres !== 1 ? 's' : ''}` : '· Completo'}</span>
+    </div>` : '';
+
+  const descText = t.descripcion || '';
+  const isLong = descText.length > 160;
+  const descId = `rowh-${t.id}`;
+
+  const celular = (t.cel_responsable||'543815610623').replace(/\D/g,'');
+  const btnHTML = esEquipo && lugaresLibres > 0
+    ? `<a class="btn-sumar-h" href="https://api.whatsapp.com/send?phone=${celular}&text=Hola!%20quiero%20sumarme%20a%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%A4%9D" target="_blank" rel="noopener">Quiero sumarme</a>`
+    : `<a class="btn-tomar-h" href="https://api.whatsapp.com/send?phone=${celular}&text=Hola!%20quiero%20hacer%20la%20tarea%20${encodeURIComponent(t.id)}%20-%20${encodeURIComponent(t.titulo)}%20%F0%9F%98%8F" target="_blank" rel="noopener">Tomar esta tarea</a>`;
+
+  return `
+    <div class="task-row-h ${catClass}">
+      <div class="row-h-top">
+        <span class="row-h-id">${escapeHtml(t.id)}</span>
+        ${esAbiertaPlus ? `<span style="font-family:var(--font-mono);font-size:8px;padding:3px 7px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #FFD700;color:#FFD700;animation:pulse-text 2s ease-in-out infinite;">⚡ Recompensa Alta</span>` : ''}
+        ${badgeCat}
+        ${badgeEstado}
+      </div>
+      <div class="row-h-title">${escapeHtml(t.titulo)}</div>
+      <div class="row-h-desc" id="${descId}">${escapeHtml(descText)}</div>
+      ${isLong ? `<span class="row-h-vermас" onclick="toggleRowH('${descId}',this)">ver más</span>` : ''}
+      ${particSection}
+      <div class="row-h-bottom">
+        <div class="row-h-recompensa">
+          <div style="font-family:var(--font-mono);font-size:8px;color:#ccc;letter-spacing:0.15em;text-transform:uppercase;">Recompensa</div>
+          <div class="row-h-sats ${catSatsClass}">${formatNumber(sats)} sats</div>
+          ${bonus > 0 ? `<div class="row-h-bonus">+${formatNumber(bonus)} bonus</div>` : ''}
+          <div class="row-h-usd">USD ${usd != null ? usd.toFixed(2) : '0.00'} (Aprox.)</div>
+        </div>
+        ${btnHTML}
+      </div>
+    </div>
+  `;
+}
+
+window.toggleRowH = function(id, btn) {
+  const el = document.getElementById(id);
+  const exp = el.classList.toggle('expanded');
+  btn.textContent = exp ? 'ver menos' : 'ver más';
+};
+
 function renderTaskCard(t) {
   const deadline = parseDate(t.fecha_limite);
   const remaining = formatTimeRemaining(deadline);
@@ -1664,8 +1809,14 @@ function renderTasks() {
 
   document.getElementById('tasks-active').innerHTML =
     inProgress.length ? inProgress.map(renderTaskCard).join('') : emptyState('No hay tareas en progreso');
-  document.getElementById('tasks-open').innerHTML =
-    openCombined.length ? openCombined.map(renderTaskCard).join('') : emptyState('No hay tareas abiertas para tomar');
+
+  // Tareas sin asignar: diseño horizontal
+  if (openCombined.length) {
+    document.getElementById('tasks-open').innerHTML =
+      `<div class="tasks-list">${openCombined.map(renderTaskRowH).join('')}</div>`;
+  } else {
+    document.getElementById('tasks-open').innerHTML = emptyState('No hay tareas abiertas para tomar');
+  }
 
   document.getElementById('count-tasks').textContent = inProgress.length;
   document.getElementById('count-open').textContent = openCombined.length;
