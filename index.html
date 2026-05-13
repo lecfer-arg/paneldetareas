@@ -1327,6 +1327,11 @@ async function fetchBtcPrice() {
       return parseFloat(d.price);
     },
     async () => {
+      const r = await fetch('https://api.coinpaprika.com/v1/tickers/btc-bitcoin');
+      const d = await r.json();
+      return parseFloat(d.quotes.USD.price);
+    },
+    async () => {
       const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
       const d = await r.json();
       return d.bitcoin.usd;
