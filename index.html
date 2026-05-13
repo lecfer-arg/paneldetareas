@@ -1896,10 +1896,10 @@ function renderHistory() {
       : '';
 
     // Badge de categoría
-    const base = parseInt(t.satoshis_base||0);
+    const satBase = parseInt(t.satoshis_base||0);
     let catBadge = '';
-    if (base <= 5000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #00E5FF;color:#00E5FF;">Express</span>`;
-    else if (base <= 15000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #F7931A;color:#F7931A;">Media</span>`;
+    if (satBase <= 5000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #00E5FF;color:#00E5FF;">Express</span>`;
+    else if (satBase <= 15000) catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #F7931A;color:#F7931A;">Media</span>`;
     else catBadge = `<span style="font-family:var(--font-mono);font-size:8px;padding:2px 6px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid #A855F7;color:#A855F7;">Avanzada</span>`;
 
     return `
