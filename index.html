@@ -1750,17 +1750,23 @@ function calcStats(persona) {
     const tarea = state.tareas.find(t => t.id === p.tarea_id);
     if (!tarea) return;
     const estado = (tarea.estado||'').toLowerCase().trim();
-    // Para tareas de equipo: contar si la persona ya entregó (a_tiempo tiene valor)
     const yaEntrego = (p.a_tiempo||'').trim() !== '';
-    if (!['completada','no_completada'].includes(estado) && !yaEntrego) return;
-    if (!['completada','no_completada'].includes(estado) && !yaEntrego) return;
+
+    // Solo procesar si:
+    // - tarea completada o no_completada (cerrada)
+    // - O tarea en_progreso_equipo donde la persona ya entregó
+    // Nunca duplicar: si es completada, leer solo de Participantes
+    const esEquipoEnCurso = estado === 'en_progreso_equipo' && yaEntrego;
+    const esCerrada = ['completada','no_completada'].includes(estado);
+
+    if (!esCerrada && !esEquipoEnCurso) return;
 
     const onTime = (p.a_tiempo||'').toUpperCase() === 'SI';
     const noErrors = (p.sin_errores||'').toUpperCase() === 'SI';
     const base = parseInt(tarea.satoshis_base || 0);
     const bonus = parseInt(tarea.satoshis_bonus || 0);
 
-    if (estado === 'completada' || (yaEntrego && estado === 'en_progreso_equipo')) {
+    if (estado === 'completada' || esEquipoEnCurso) {
       completed++;
       if (onTime) {
         onTimeCount++;
