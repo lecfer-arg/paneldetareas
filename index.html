@@ -566,7 +566,7 @@ body::after {
 }
 .lb-row {
   display: grid;
-  grid-template-columns: 60px 80px 1fr 140px 100px 100px;
+  grid-template-columns: 60px 80px 1fr 100px 100px;
   align-items: center;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
@@ -1785,7 +1785,6 @@ function renderLeaderboard() {
       <div></div>
       <div></div>
       <div>Satoshis Ganados</div>
-      <div>Equivalente en USD</div>
       <div class="lb-stats-extra">A tiempo</div>
       <div class="lb-stats-extra">Tareas</div>
     </div>
@@ -1797,27 +1796,28 @@ function renderLeaderboard() {
     const comparativa = getComparativa(usd);
     const barWidth = maxSats > 0 ? (s.totalSats / maxSats) * 100 : 0;
     const personColor = s.persona.color_acento || '#F7931A';
+    const usdStr = usd != null ? `USD ${usd.toFixed(2)} aprox.` : '';
+
     return `
       <div class="lb-row">
         <div class="lb-rank ${rankClass}">${(i+1).toString().padStart(2,'0')}</div>
         ${avatarHTML(s.persona)}
         <div class="lb-sats-block">
           <div class="lb-bar-container-inline">
-            <div class="lb-bar-inline" style="width: ${barWidth}%; background: ${personColor}; box-shadow: 0 0 8px ${personColor}66;"></div>
+            <div class="lb-bar-inline" style="width: ${barWidth}%; background: ${personColor};"></div>
           </div>
-          <div class="lb-sats-value">${formatNumber(s.baseSats)} sats</div>
-          <div class="lb-bonus-value">+ ${formatNumber(s.bonusSats)} bonus</div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:#cccccc;margin-top:2px;">Total de Sats recibidos: <span style="color:#ffffff;font-weight:600;">${formatNumber(s.totalSats)}</span></div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#cccccc;margin-top:4px;">
+            <span style="color:${personColor};font-weight:600;">${formatNumber(s.baseSats)} sats</span> por la tarea + <span style="color:#10B981;">${formatNumber(s.bonusSats)} sats</span> de bonus
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:#ffffff;font-weight:600;margin-top:2px;">
+            Total: ${formatNumber(s.totalSats)} sats ${usdStr ? `<span style="font-size:10px;color:#888;font-weight:400;">(${usdStr})</span>` : ''}
+          </div>
+          ${comparativa ? `<div style="font-family:var(--font-mono);font-size:11px;color:#ffffff;margin-top:2px;">${escapeHtml(comparativa)}</div>` : ''}
           <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
           <div class="lb-mobile-extra">
-            <span style="color:#777777;">${formatUSD(usd)}</span>
             <span style="color:var(--text-dim);margin-left:10px;">⏱ ${s.onTimePercent}%</span>
             <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
           </div>
-        </div>
-        <div class="lb-value lb-usd-desktop">
-          <div class="lb-value dim">${formatUSD(usd)}</div>
-          ${comparativa ? `<div style="font-family:var(--font-mono);font-size:10px;color:#ffffff;margin-top:4px;line-height:1.4;">${escapeHtml(comparativa)}</div>` : ''}
         </div>
         <div class="lb-value lb-stats-extra">${s.onTimePercent}%</div>
         <div class="lb-value lb-stats-extra">${s.completed} <span style="color:var(--text-faint);">/ ${s.failed}</span></div>
