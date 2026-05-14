@@ -1743,7 +1743,7 @@ function calcStats(persona) {
     const base = parseInt(tarea.satoshis_base || 0);
     const bonus = parseInt(tarea.satoshis_bonus || 0);
 
-    if (estado === 'completada') {
+    if (estado === 'completada' || (yaEntrego && estado === 'en_progreso_equipo')) {
       completed++;
       if (onTime) {
         onTimeCount++;
@@ -1752,7 +1752,7 @@ function calcStats(persona) {
       } else {
         baseSats += Math.max(0, base - bonus);
       }
-    } else {
+    } else if (estado === 'no_completada') {
       failed++;
     }
   });
