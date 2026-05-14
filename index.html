@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel de Tareas — Mission Control</title>
+<title>Tareas x Satoshis</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23000000'/><path d='M13 2L4.5 13.5H11L10 22L20.5 9.5H14L13 2Z' fill='%23F5D800'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -188,6 +189,7 @@ body::after {
   display: flex;
   align-items: center;
   gap: 10px;
+  text-transform: uppercase;
 }
 .marquee-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
@@ -1180,7 +1182,8 @@ const DEFAULT_CONFIG = {
   tareasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1038238002&single=true&output=csv',
   configURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=319378844&single=true&output=csv',
   participantesURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1202700065&single=true&output=csv',
-  comparativasURL: '',
+  comparativasURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=1536683713&single=true&output=csv',
+  comunicadosURL: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQpgTKmhwQftnrhqMq4aQ3nZg2TJYDCBqkvfySBSy1bBO9-_yryMURcAdURTg1wgA/pub?gid=612717678&single=true&output=csv',
 };
 
 // Datos de ejemplo embebidos (se usan si no hay URLs configuradas)
