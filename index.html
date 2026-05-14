@@ -1806,14 +1806,17 @@ function renderLeaderboard() {
           <div class="lb-bar-container-inline">
             <div class="lb-bar-inline" style="width: ${barWidth}%; background: ${personColor};"></div>
           </div>
-          <div style="font-family:var(--font-mono);font-size:11px;color:#cccccc;margin-top:4px;">
-            <span style="color:${personColor};font-weight:600;">${formatNumber(s.baseSats)} sats</span> por la tarea + <span style="color:#10B981;">${formatNumber(s.bonusSats)} sats</span> de bonus
+          <div style="font-family:var(--font-mono);font-size:11px;margin-top:4px;">
+            <span style="color:#F7931A;font-weight:600;">${formatNumber(s.baseSats)} sats</span><span style="color:#666;"> por tareas correctas</span>
           </div>
-          <div style="font-family:var(--font-mono);font-size:12px;color:#ffffff;font-weight:600;margin-top:2px;">
-            Total: ${formatNumber(s.totalSats)} sats ${usdStr ? `<span style="font-size:10px;color:#888;font-weight:400;">(${usdStr})</span>` : ''}
+          <div style="font-family:var(--font-mono);font-size:11px;margin-top:2px;">
+            <span style="color:#F7931A;font-weight:600;">+ ${formatNumber(s.bonusSats)} sats</span><span style="color:#666;"> por entregar a tiempo (Bonus)</span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:#ffffff;font-weight:600;margin-top:4px;">
+            ⚡ Total: ${formatNumber(s.totalSats)} sats ${usdStr ? `<span style="font-size:10px;color:#666;font-weight:400;">(${usdStr})</span>` : ''}
           </div>
           ${comparativa ? `<div style="font-family:var(--font-mono);font-size:11px;color:#ffffff;margin-top:2px;">${escapeHtml(comparativa)}</div>` : ''}
-          <div class="lb-nickname">${escapeHtml(s.persona.nickname)}</div>
+          <div style="font-family:var(--font-mono);font-size:13px;color:#F7931A;font-style:italic;margin-top:6px;">by ${escapeHtml(s.persona.nickname)}</div>
           <div class="lb-mobile-extra">
             <span style="color:var(--text-dim);margin-left:10px;">⏱ ${s.onTimePercent}%</span>
             <span style="color:var(--text-dim);margin-left:10px;">✓ ${s.completed} / ${s.failed}</span>
