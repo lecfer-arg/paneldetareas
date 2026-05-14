@@ -637,6 +637,7 @@ body::after {
   align-items: center;
   gap: 12px;
 }
+.lb-rank {
   font-family: var(--font-mono);
   font-size: 18px;
   font-weight: 500;
@@ -935,10 +936,12 @@ body::after {
     gap: 10px;
   }
   .lb-rank-avatar {
-    display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
+  }
+  .lb-rank {
+    font-size: 13px;
   }
   .lb-row .lb-stats-extra { display: none; }
   .lb-row.header { display: none; }
@@ -1812,7 +1815,7 @@ function renderLeaderboard() {
     return `
       <div class="lb-row">
         <div class="lb-rank-avatar">
-          <div class="lb-rank ${rankClass}">${(i+1).toString().padStart(2,'0')}</div>
+          <div class="lb-rank ${rankClass}" style="${i < 3 ? 'font-weight:700;' : 'color:#555;font-weight:400;'}">${(i+1).toString().padStart(2,'0')}</div>
           ${avatarHTML(s.persona)}
         </div>
         <div class="lb-sats-block">
