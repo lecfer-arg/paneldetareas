@@ -1610,7 +1610,13 @@ function renderTaskCard(t) {
   // Avatares de participantes — solo activos (no entregaron aún)
   const avataresActivos = esEquipo ? particActivos : partics;
   const avataresHTML = avataresActivos.length > 0
-    ? avataresActivos.map(p => avatarHTML(findPersona(p.nickname))).join('')
+    ? avataresActivos.map(p => {
+        const persona = findPersona(p.nickname);
+        return `<div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          ${avatarHTML(persona)}
+          <span style="font-family:var(--font-mono);font-size:9px;color:#cccccc;letter-spacing:0.05em;">${escapeHtml(p.nickname)}</span>
+        </div>`;
+      }).join('')
     : `<span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);font-style:italic;">${esAbierta ? 'Disponible para tomar' : 'Sin participantes activos'}</span>`;
 
   // Barra de progreso del equipo
